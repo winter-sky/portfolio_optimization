@@ -12,6 +12,12 @@
     <version>0.0.1</version>
     <packaging>pom</packaging>
 
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>1.4.2.RELEASE</version>
+    </parent>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
@@ -21,6 +27,22 @@
 
         <java.version>1.8</java.version>
     </properties>
+
+    <dependencies>
+        <!-- https://mvnrepository.com/artifact/com.datumbox/lpsolve -->
+        <dependency>
+            <groupId>com.datumbox</groupId>
+            <artifactId>lpsolve</artifactId>
+            <version>5.5.2.0</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.gnu.glpk/glpk-java -->
+        <dependency>
+            <groupId>org.gnu.glpk</groupId>
+            <artifactId>glpk-java</artifactId>
+            <version>1.12.0</version>
+        </dependency>
+    </dependencies>
 
     <build>
         <plugins>
