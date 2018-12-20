@@ -7,10 +7,10 @@ import java.util.Arrays;
 /**
  * Represents portfolio optimization task.
  */
-public class Task {
+public class PortfolioTask {
     private Instrument[] instrument;
 
-    private TaskType type;
+    private PortfolioTaskType type;
 
     private double maxAmount;
 
@@ -24,11 +24,11 @@ public class Task {
         this.instrument = instrument;
     }
 
-    public TaskType getType() {
+    public PortfolioTaskType getType() {
         return type;
     }
 
-    public void setType(TaskType type) {
+    public void setType(PortfolioTaskType type) {
         this.type = type;
     }
 
@@ -50,7 +50,7 @@ public class Task {
 
     @Override
     public String toString() {
-        return "Task{" +
+        return "PortfolioTask{" +
             "instrument=" + Arrays.toString(instrument) +
             ", type=" + type +
             ", maxAmount=" + maxAmount +

@@ -1,6 +1,6 @@
 package org.portfolio.optimization.solution;
 
-public enum TaskType {
+public enum PortfolioTaskType {
     /** Maximize profit, with the risk not exceeding certain level defined by user.
     MAXIMIZE_PROFITE,
 
