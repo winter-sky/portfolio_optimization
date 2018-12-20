@@ -12,10 +12,13 @@ public class Instrument {
 
     private InstrumentType instrumentType;
 
+    /** For actions/obligations - price of one action. For other instruments can be different.*/
     private double minimalLot;
 
+    /** Yield curve.*/
     private double[] yieldCurve;
 
+    /** Risk curve.*/
     private double[] riskCurve;
 
     public long getId() {

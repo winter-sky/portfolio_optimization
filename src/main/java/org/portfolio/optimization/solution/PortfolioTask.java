@@ -12,8 +12,12 @@ public class PortfolioTask {
 
     private PortfolioTaskType type;
 
+    /** Maximum amount of money user wishes to invest into portfolio. */
     private double maxAmount;
 
+    /** TODO: using double is not appropriate. Maybe something like apache Pair (
+     * (value of risk and probability of risk).
+     */
     private double risk;
 
     public Instrument[] getInstrument() {
