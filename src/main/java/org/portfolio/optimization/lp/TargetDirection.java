@@ -1,7 +1,7 @@
 package org.portfolio.optimization.lp;
 
 /**
- * TBD: add comments for TargetDirection.java.
+ * Direction of target function.
  */
 public enum TargetDirection {
     /** */
