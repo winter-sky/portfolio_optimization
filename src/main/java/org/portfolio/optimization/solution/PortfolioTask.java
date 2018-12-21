@@ -14,7 +14,9 @@ public class PortfolioTask {
 
     private double maxAmount;
 
-    private double risk;
+    private Risk risk;
+
+    private int term;
 
     public Instrument[] getInstrument() {
         return instrument;
@@ -40,12 +42,30 @@ public class PortfolioTask {
         this.maxAmount = maxAmount;
     }
 
-    public double getRisk() {
+    public Risk getRisk() {
         return risk;
     }
 
-    public void setRisk(double risk) {
+    public void setRisk(Risk risk) {
         this.risk = risk;
+    }
+
+    /**
+     * Gets desired term of investments.
+     *
+     * @return Term of investment
+     */
+    public int getTerm() {
+        return term;
+    }
+
+    /**
+     * Sets desired term of investments.
+     *
+     * @param term Desired term of investments.
+     */
+    public void setTerm(int term) {
+        this.term = term;
     }
 
     @Override

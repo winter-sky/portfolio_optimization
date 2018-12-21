@@ -2,6 +2,7 @@ package org.portfolio.optimization.lp.impl;
 
 import lpsolve.LpSolve;
 import lpsolve.LpSolveException;
+import org.portfolio.optimization.POException;
 import org.portfolio.optimization.lp.*;
 
 import java.util.Arrays;
@@ -24,7 +25,7 @@ public class LpSolveLpProblemSolver extends LpProblemSolverAdaptor {
      * @param verbose
      * @throws LpException
      */
-    public LpSolveLpProblemSolver(int size, int verbose) throws LpException {
+    public LpSolveLpProblemSolver(int size, int verbose) throws POException {
         try {
             solver = LpSolve.makeLp(0, size);
 
@@ -49,7 +50,7 @@ public class LpSolveLpProblemSolver extends LpProblemSolverAdaptor {
             this.verbose = verbose;
         }
         catch (LpSolveException e) {
-            throw new LpException("Cannot create problem [size=" + size + ']');
+            throw new POException("Cannot create problem [size=" + size + ']');
         }
     }
 
