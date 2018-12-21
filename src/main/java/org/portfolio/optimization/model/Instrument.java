@@ -12,10 +12,13 @@ public class Instrument {
 
     private InstrumentType instrumentType;
 
+    /** For actions/obligations - price of one action. For other instruments can be different.*/
     private double minimalLot;
 
+    /** Yield curve.*/
     private double[] yieldCurve;
 
+    /** Risk curve.*/
     private double[] riskCurve;
 
     public long getId() {
@@ -42,6 +45,11 @@ public class Instrument {
         this.instrumentType = instrumentType;
     }
 
+    /**
+     * Gets minimal lot for the instruments, for example price of single action, etc.
+     *
+     * @return Minimal lot for the instrument.
+     */
     public double getMinimalLot() {
         return minimalLot;
     }
@@ -50,6 +58,11 @@ public class Instrument {
         this.minimalLot = minimalLot;
     }
 
+    /**
+     * Gets yield curve for the instruments.
+     *
+     * @return Yield curve for the instruments.
+     */
     public double[] getYieldCurve() {
         return yieldCurve;
     }

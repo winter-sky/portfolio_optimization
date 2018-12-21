@@ -12,6 +12,7 @@ public class PortfolioTask {
 
     private PortfolioTaskType type;
 
+    /** Maximum amount of money user wishes to invest into portfolio. */
     private double maxAmount;
 
     private Risk risk;
