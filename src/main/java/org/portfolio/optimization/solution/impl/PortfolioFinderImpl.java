@@ -1,8 +1,7 @@
 package org.portfolio.optimization.solution.impl;
 
 import org.portfolio.optimization.POException;
-import org.portfolio.optimization.lp.LpConfig;
-import org.portfolio.optimization.lp.LpProblemSolver;
+import org.portfolio.optimization.lp.*;
 import org.portfolio.optimization.lp.impl.LpSolveLpProblemSolver;
 import org.portfolio.optimization.model.Instrument;
 import org.portfolio.optimization.potfolio.Portfolio;
@@ -30,6 +29,43 @@ public class PortfolioFinderImpl implements PortfolioFinder {
         }
 
         LpProblemSolver solver = new LpSolveLpProblemSolver(size, 0);
+
+        // SUM[i in N] p[i]*x[i] + y = su
+        double[] coeff = new double[size];
+
+        for (int i = 0; i < size; i++) {
+            if (i < n) {
+                coeff[i] = instrs[i].getMinimalLot();
+            }
+        }
+
+        coeff[2 * n] = 1;
+
+        solver.addConstraint(new LpProblemConstraint(coeff, Relation.EQ, task.getMaxAmount()));
+
+        for (int i = 0; i < size; i++) {
+            coeff = new double[size];
+
+            // Z[i] = p[i] – y, for all i {0, N}, Z[i] > 0;
+            coeff[n + i] = 1;
+            coeff[2 * n] = 1;
+
+            solver.addConstraint(new LpProblemConstraint(coeff, Relation.EQ, instrs[i].getMinimalLot()));
+        }
+
+        // Target function.
+        //f (X) =  (-1)*Sum[I in N] x[i]*p[i]*yc[i][t]
+        coeff = new double[size];
+
+        for (int i = 0; i < size; i++) {
+            if (i < n) {
+                coeff[i] = yield[i] * instrs[i].getMinimalLot();
+            }
+        }
+
+        solver.addObjective(coeff, TargetDirection.MAXIMUM);
+
+        LpProblemResult res = solver.solve();
 
         return null;
     }

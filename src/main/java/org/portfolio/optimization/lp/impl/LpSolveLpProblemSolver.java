@@ -58,7 +58,7 @@ public class LpSolveLpProblemSolver extends LpProblemSolverAdaptor {
      * {@inheritDoc}
      */
     @Override
-    public void addConstraint(LpProblemConstraint constraint) throws LpException {
+    public void addConstraint(LpProblemConstraint constraint) throws POException {
         assert constraint != null;
 
         try {
@@ -68,7 +68,7 @@ public class LpSolveLpProblemSolver extends LpProblemSolverAdaptor {
             printConstraint(constraint);
         }
         catch (LpSolveException e) {
-            throw new LpException("Error adding constraint [constraint=" + constraint + ']', e);
+            throw new POException("Error adding constraint [constraint=" + constraint + ']', e);
         }
     }
 
@@ -76,7 +76,7 @@ public class LpSolveLpProblemSolver extends LpProblemSolverAdaptor {
      * {@inheritDoc}
      */
     @Override
-    public void addObjective(double[] coeff, TargetDirection dir) throws LpException {
+    public void addObjective(double[] coeff, TargetDirection dir) throws POException {
         if (dir == TargetDirection.MAXIMUM) {
             solver.setMaxim();
         }
@@ -89,7 +89,7 @@ public class LpSolveLpProblemSolver extends LpProblemSolverAdaptor {
             solver.setObjFn(createRow(coeff));
         }
         catch (LpSolveException e) {
-            throw new LpException("Error setting objective function [coeff=" + Arrays.toString(coeff) + ']', e);
+            throw new POException("Error setting objective function [coeff=" + Arrays.toString(coeff) + ']', e);
         }
     }
 
@@ -97,7 +97,7 @@ public class LpSolveLpProblemSolver extends LpProblemSolverAdaptor {
      * {@inheritDoc}
      */
     @Override
-    public LpProblemResult solve() throws LpException {
+    public LpProblemResult solve() throws POException {
         int code;
 
         solver.setVerbose(verbose);
@@ -106,14 +106,14 @@ public class LpSolveLpProblemSolver extends LpProblemSolverAdaptor {
             code = solver.solve();
         }
         catch (LpSolveException e) {
-            throw new LpException("Error while solving task.", e);
+            throw new POException("Error while solving task.", e);
         }
 
         try {
             return new LpProblemResultImpl(getStatus(code), solver.getObjective(), solver.getPtrVariables());
         }
         catch (LpSolveException e) {
-            throw new LpException("Error while getting results.", e);
+            throw new POException("Error while getting results.", e);
         }
     }
 
@@ -125,7 +125,7 @@ public class LpSolveLpProblemSolver extends LpProblemSolverAdaptor {
      * @return TBD
      * @throws LpException
      */
-    private static int getRelationship(Relation relation) throws LpException {
+    private static int getRelationship(Relation relation) throws POException {
         switch (relation) {
             case EQ: {
                 return LpSolve.EQ;
@@ -140,7 +140,7 @@ public class LpSolveLpProblemSolver extends LpProblemSolverAdaptor {
             }
 
             default: {
-                throw new LpException("Cannot convert relation [relation=" + relation + ']');
+                throw new POException("Cannot convert relation [relation=" + relation + ']');
             }
         }
     }
@@ -151,9 +151,9 @@ public class LpSolveLpProblemSolver extends LpProblemSolverAdaptor {
      * 
      * @param code
      * @return TBD
-     * @throws LpException
+     * @throws POException
      */
-    private static LpStatus getStatus(int code) throws LpException {
+    private static LpStatus getStatus(int code) throws POException {
         switch (code) {
             case 0: {
                 return LpStatus.SUCCESS;

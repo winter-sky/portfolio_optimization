@@ -19,7 +19,7 @@ public class LpSolverGlpk extends LpProblemSolverAdaptor {
      * {@inheritDoc}
      */
     @Override
-    public void addConstraint(LpProblemConstraint constraint) throws LpException {
+    public void addConstraint(LpProblemConstraint constraint) throws POException {
         constraints.add(constraint);
     }
 
@@ -27,7 +27,7 @@ public class LpSolverGlpk extends LpProblemSolverAdaptor {
      * {@inheritDoc}
      */
     @Override
-    public void addObjective(double[] coeff, TargetDirection dir) throws LpException {
+    public void addObjective(double[] coeff, TargetDirection dir) throws POException {
         this.coeff = coeff;
         this.dir = dir;
     }

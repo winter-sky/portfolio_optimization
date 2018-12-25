@@ -12,9 +12,9 @@ public interface LpProblemSolver {
      * TBD
      * 
      * @param constraint
-     * @throws LpException
+     * @throws POException
      */
-    public void addConstraint(LpProblemConstraint constraint) throws LpException;
+    public void addConstraint(LpProblemConstraint constraint) throws POException;
 
     /**
      * 
@@ -22,16 +22,16 @@ public interface LpProblemSolver {
      * 
      * @param coeff
      * @param dir
-     * @throws LpException
+     * @throws POException
      */
-    public void addObjective(double[] coeff, TargetDirection dir) throws LpException;
+    public void addObjective(double[] coeff, TargetDirection dir) throws POException;
 
     /**
      * 
      * TBD
      * 
      * @return TBD
-     * @throws LpException
+     * @throws POException
      */
-    public LpProblemResult solve() throws LpException, POException;
+    public LpProblemResult solve() throws POException;
 }
