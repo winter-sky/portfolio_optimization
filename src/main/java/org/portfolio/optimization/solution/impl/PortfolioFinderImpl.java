@@ -8,6 +8,7 @@ import org.portfolio.optimization.potfolio.Portfolio;
 import org.portfolio.optimization.potfolio.PortfolioInstrument;
 import org.portfolio.optimization.solution.PortfolioFinder;
 import org.portfolio.optimization.solution.PortfolioTask;
+import org.portfolio.optimization.solution.Risk;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,18 +43,37 @@ public class PortfolioFinderImpl implements PortfolioFinder {
 
         LpProblemSolver solver = new LpSolveLpProblemSolver(size, 0);
 
-        // SUM[i in N] p[i]*x[i] + y = su
+        addMaxAmountConstaint(solver, size, instrs, task.getMaxAmount());
+        addAuxConstraint(solver, size, instrs);
+        addRiskContraint(solver, size, riskArr, task.getRisk(), n);
+
+        addTargetFunction(solver, size, instrs, yield);
+
+        LpProblemResult res = solver.solve();
+
+        return processResult(res, instrs);
+    }
+
+    private void addTargetFunction(LpProblemSolver solver, int size, Instrument[] instrs, double[] yield) throws POException {
+        // Target function.
+        //f (X) =  (-1)*Sum[I in N] x[i]*p[i]*yc[i][t]
+        int n = instrs.length;
+
         double[] coeff = new double[size];
 
         for (int i = 0; i < size; i++) {
             if (i < n) {
-                coeff[i] = instrs[i].getMinimalLot();
+                coeff[i] = yield[i] * instrs[i].getMinimalLot();
             }
         }
 
-        coeff[2 * n] = 1;
+        solver.addObjective(coeff, TargetDirection.MAXIMUM);
+    }
 
-        solver.addConstraint(new LpProblemConstraint(coeff, Relation.EQ, task.getMaxAmount()));
+    private void addAuxConstraint(LpProblemSolver solver, int size, Instrument[] instrs) throws POException {
+        double[] coeff;
+
+        int n = instrs.length;
 
         for (int i = 0; i < n; i++) {
             coeff = new double[size];
@@ -64,10 +84,29 @@ public class PortfolioFinderImpl implements PortfolioFinder {
 
             solver.addConstraint(new LpProblemConstraint(coeff, Relation.EQ, instrs[i].getMinimalLot()));
         }
+    }
 
+    private void addMaxAmountConstaint(LpProblemSolver solver, int size, Instrument[] instrs, double maxAmount) throws POException {
+        // SUM[i in N] p[i]*x[i] + y = su
+        double[] coeff = new double[size];
+
+        int n = instrs.length;
+
+        for (int i = 0; i < size; i++) {
+            if (i < n) {
+                coeff[i] = instrs[i].getMinimalLot();
+            }
+        }
+
+        coeff[2 * n] = 1;
+
+        solver.addConstraint(new LpProblemConstraint(coeff, Relation.EQ, maxAmount));
+    }
+
+    private void addRiskContraint(LpProblemSolver solver, int size, double[] riskArr, Risk risk, int n) throws POException {
         // Risk constraint.
         // Sum [I in N] (cr (j, i) /(Sum[I in N](cr (j, i)) – br) * x[i] = -y2;
-        coeff = new double[size];
+        double[] coeff = new double[size];
 
         for (int i = 0; i < n; i++) {
             double cf = 0;
@@ -76,7 +115,7 @@ public class PortfolioFinderImpl implements PortfolioFinder {
                 cf += riskArr[i];
             }
 
-            cf = cf / (cf - task.getRisk().getProbability());
+            cf = cf / (cf - risk.getProbability());
 
             coeff[i] = cf;
         }
@@ -84,22 +123,6 @@ public class PortfolioFinderImpl implements PortfolioFinder {
         coeff[2 * n + 1] = 1;
 
         solver.addConstraint(new LpProblemConstraint(coeff, Relation.EQ, 0));
-
-        // Target function.
-        //f (X) =  (-1)*Sum[I in N] x[i]*p[i]*yc[i][t]
-        coeff = new double[size];
-
-        for (int i = 0; i < size; i++) {
-            if (i < n) {
-                coeff[i] = yield[i] * instrs[i].getMinimalLot();
-            }
-        }
-
-        solver.addObjective(coeff, TargetDirection.MAXIMUM);
-
-        LpProblemResult res = solver.solve();
-
-        return processResult(res, instrs);
     }
 
     private Portfolio processResult(LpProblemResult res, Instrument[] instrs) {
