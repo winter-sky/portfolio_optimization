@@ -12,6 +12,8 @@ public class PortfolioTask {
 
     private PortfolioTaskType type;
 
+    private double[] lossScale;
+
     /** Maximum amount of money user wishes to invest into portfolio. */
     private double maxAmount;
 
@@ -69,13 +71,23 @@ public class PortfolioTask {
         this.term = term;
     }
 
+    public double[] getLossScale() {
+        return lossScale;
+    }
+
+    public void setLossScale(double[] lossScale) {
+        this.lossScale = lossScale;
+    }
+
     @Override
     public String toString() {
         return "PortfolioTask{" +
             "instrument=" + Arrays.toString(instrument) +
             ", type=" + type +
+            ", lossScale=" + Arrays.toString(lossScale) +
             ", maxAmount=" + maxAmount +
             ", risk=" + risk +
+            ", term=" + term +
             '}';
     }
 }

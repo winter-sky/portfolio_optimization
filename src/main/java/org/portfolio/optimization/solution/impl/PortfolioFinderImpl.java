@@ -32,6 +32,14 @@ public class PortfolioFinderImpl implements PortfolioFinder {
             yield[i] = instrs[i].getYieldCurve()[term];
         }
 
+        double[] riskArr = new double[n];
+
+        int lossIdx = SolutionUtil.getLossIndex(task.getRisk(), task.getLossScale());
+
+        for (int i = 0; i < n; i++) {
+            riskArr[i] = instrs[i].getRiskCurve()[lossIdx];
+        }
+
         LpProblemSolver solver = new LpSolveLpProblemSolver(size, 0);
 
         // SUM[i in N] p[i]*x[i] + y = su
@@ -47,7 +55,7 @@ public class PortfolioFinderImpl implements PortfolioFinder {
 
         solver.addConstraint(new LpProblemConstraint(coeff, Relation.EQ, task.getMaxAmount()));
 
-        for (int i = 0; i < size; i++) {
+        for (int i = 0; i < n; i++) {
             coeff = new double[size];
 
             // Z[i] = p[i] – y, for all i {0, N}, Z[i] > 0;
@@ -56,6 +64,26 @@ public class PortfolioFinderImpl implements PortfolioFinder {
 
             solver.addConstraint(new LpProblemConstraint(coeff, Relation.EQ, instrs[i].getMinimalLot()));
         }
+
+        // Risk constraint.
+        // Sum [I in N] (cr (j, i) /(Sum[I in N](cr (j, i)) – br) * x[i] = -y2;
+        coeff = new double[size];
+
+        for (int i = 0; i < n; i++) {
+            double cf = 0;
+
+            for (int j = 0; j < n; j++) {
+                cf += riskArr[i];
+            }
+
+            cf = cf / (cf - task.getRisk().getProbability());
+
+            coeff[i] = cf;
+        }
+
+        coeff[2 * n + 1] = 1;
+
+        solver.addConstraint(new LpProblemConstraint(coeff, Relation.EQ, 0));
 
         // Target function.
         //f (X) =  (-1)*Sum[I in N] x[i]*p[i]*yc[i][t]
