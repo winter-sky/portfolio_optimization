@@ -26,6 +26,7 @@
         <java.version>1.8</java.version>
         <spring.version>5.1.1.RELEASE</spring.version>
         <slf4j.version>1.8.0-beta2</slf4j.version>
+        <junit.version>4.12</junit.version>
     </properties>
 
     <repositories>
@@ -62,6 +63,13 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
             <version>${slf4j.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

@@ -136,6 +136,7 @@ public class PortfolioFinderImpl implements PortfolioFinder {
 
                 pi.setInstrument(instrs[i]);
                 pi.setQuantity((int)arr[i]);
+                pi.setTotalAmount(instrs[i].getMinimalLot() * pi.getQuantity());
 
                 lst.add(pi);
             }
