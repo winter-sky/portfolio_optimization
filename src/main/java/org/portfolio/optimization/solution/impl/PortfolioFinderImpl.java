@@ -5,8 +5,12 @@ import org.portfolio.optimization.lp.*;
 import org.portfolio.optimization.lp.impl.LpSolveLpProblemSolver;
 import org.portfolio.optimization.model.Instrument;
 import org.portfolio.optimization.potfolio.Portfolio;
+import org.portfolio.optimization.potfolio.PortfolioInstrument;
 import org.portfolio.optimization.solution.PortfolioFinder;
 import org.portfolio.optimization.solution.PortfolioTask;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class PortfolioFinderImpl implements PortfolioFinder {
     @Override
@@ -67,7 +71,31 @@ public class PortfolioFinderImpl implements PortfolioFinder {
 
         LpProblemResult res = solver.solve();
 
-        return null;
+        return processResult(res, instrs);
+    }
+
+    private Portfolio processResult(LpProblemResult res, Instrument[] instrs) {
+        double[] arr = res.getSolution();
+
+        List<PortfolioInstrument> lst = new ArrayList<>();
+
+        for (int i = 0; i < instrs.length; i++) {
+            if (Double.compare(0, arr[i]) > 0) {
+                PortfolioInstrument pi = new PortfolioInstrument();
+
+                pi.setInstrument(instrs[i]);
+                pi.setQuantity((int)arr[i]);
+
+                lst.add(pi);
+            }
+        }
+
+        Portfolio p = new Portfolio();
+
+        p.setPortfolioInstruments(lst);
+        p.setTotalAmount(res.getObjective());
+
+        return p;
     }
 
     private void validateTask(PortfolioTask task) throws POException {
