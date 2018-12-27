@@ -149,8 +149,8 @@ public class PortfolioFinderImpl implements PortfolioFinder {
                 pi.setInstrument(instrs[i]);
                 pi.setQuantity((int)arr[i]);
                 pi.setAmount(instrs[i].getMinimalLot() * pi.getQuantity());
-                pi.setYield(instrs[i].getYieldCurve()[task.getTerm()]);
-                pi.setIncome(pi.getAmount() * pi.getYield());
+                pi.setYield(SolutionUtil.round(instrs[i].getYieldCurve()[task.getTerm()] * 100));
+                pi.setIncome(SolutionUtil.round(pi.getAmount() * instrs[i].getYieldCurve()[task.getTerm()]));
                 pi.setAmountAtTerm(pi.getAmount() + pi.getIncome());
 
                 totalAmount += pi.getAmount();
@@ -164,12 +164,13 @@ public class PortfolioFinderImpl implements PortfolioFinder {
         Portfolio p = new Portfolio();
 
         p.setMaxAmount(task.getMaxAmount());
+        p.setAmount(totalAmount);
+        p.setAmountAtTerm(SolutionUtil.round(totalAmountAtTerm));
         p.setTerm(task.getTerm());
         p.setRisk(task.getRisk());
         p.setPortfolioInstruments(lst);
-        p.setTotalAmount(totalAmount);
-        p.setIncome(totalIncome);
-        p.setTotalAmountAtTerm(totalAmountAtTerm);
+        p.setIncome(SolutionUtil.round(totalIncome));
+        p.setYield(SolutionUtil.round(totalIncome * 100 / totalAmount));
 
         return p;
     }

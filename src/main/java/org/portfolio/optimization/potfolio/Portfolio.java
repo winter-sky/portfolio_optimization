@@ -7,9 +7,11 @@ import java.util.List;
 public class Portfolio {
     private List<PortfolioInstrument> portfolioInstruments;
 
-    private double totalAmount;
-
     private double maxAmount;
+
+    private double amount;
+
+    private double amountAtTerm;
 
     private int term;
 
@@ -19,8 +21,6 @@ public class Portfolio {
 
     private double income;
 
-    private double totalAmountAtTerm;
-
     public List<PortfolioInstrument> getPortfolioInstruments() {
         return portfolioInstruments;
     }
@@ -29,12 +29,12 @@ public class Portfolio {
         this.portfolioInstruments = portfolioInstruments;
     }
 
-    public double getTotalAmount() {
-        return totalAmount;
+    public double getAmount() {
+        return amount;
     }
 
-    public void setTotalAmount(double totalAmount) {
-        this.totalAmount = totalAmount;
+    public void setAmount(double amount) {
+        this.amount = amount;
     }
 
     public double getMaxAmount() {
@@ -77,25 +77,25 @@ public class Portfolio {
         this.income = income;
     }
 
-    public double getTotalAmountAtTerm() {
-        return totalAmountAtTerm;
+    public double getAmountAtTerm() {
+        return amountAtTerm;
     }
 
-    public void setTotalAmountAtTerm(double totalAmountAtTerm) {
-        this.totalAmountAtTerm = totalAmountAtTerm;
+    public void setAmountAtTerm(double amountAtTerm) {
+        this.amountAtTerm = amountAtTerm;
     }
 
     @Override
     public String toString() {
         return "Portfolio{" +
             "portfolioInstruments=" + portfolioInstruments +
-            ", totalAmount=" + totalAmount +
+            ", amount=" + amount +
             ", maxAmount=" + maxAmount +
             ", term=" + term +
             ", risk=" + risk +
             ", yield=" + yield +
             ", income=" + income +
-            ", totalAmountAtTerm=" + totalAmountAtTerm +
+            ", amountAtTerm=" + amountAtTerm +
             '}';
     }
 }

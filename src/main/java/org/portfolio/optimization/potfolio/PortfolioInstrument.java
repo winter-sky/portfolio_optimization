@@ -64,6 +64,11 @@ public class PortfolioInstrument {
         this.amountAtTerm = amountAtTerm;
     }
 
+    /**
+     * Gets yield at term, in %.
+     *
+     * @return Yield at term, in %.
+     */
     public double getYield() {
         return yield;
     }
