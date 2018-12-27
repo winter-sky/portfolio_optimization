@@ -13,7 +13,16 @@ public class PortfolioInstrument {
     private int quantity;
 
     /** Total amount of money spent on the particular instrument in the portfolio.*/
-    private double totalAmount;
+    private double amount;
+
+    /** Yield at requested term. */
+    private double yield;
+
+    /** Income of the instrument at the requested term. */
+    private double income;
+
+    /** Amount at requested term. */
+    private double amountAtTerm;
 
     public Instrument getInstrument() {
         return instrument;
@@ -31,12 +40,36 @@ public class PortfolioInstrument {
         this.quantity = quantity;
     }
 
-    public double getTotalAmount() {
-        return totalAmount;
+    public double getAmount() {
+        return amount;
     }
 
-    public void setTotalAmount(double totalAmount) {
-        this.totalAmount = totalAmount;
+    public void setAmount(double amount) {
+        this.amount = amount;
+    }
+
+    public double getIncome() {
+        return income;
+    }
+
+    public void setIncome(double income) {
+        this.income = income;
+    }
+
+    public double getAmountAtTerm() {
+        return amountAtTerm;
+    }
+
+    public void setAmountAtTerm(double amountAtTerm) {
+        this.amountAtTerm = amountAtTerm;
+    }
+
+    public double getYield() {
+        return yield;
+    }
+
+    public void setYield(double yield) {
+        this.yield = yield;
     }
 
     @Override
@@ -44,7 +77,10 @@ public class PortfolioInstrument {
         return "PortfolioInstrument{" +
             "instrument=" + instrument +
             ", quantity=" + quantity +
-            ", totalAmount=" + totalAmount +
+            ", amount=" + amount +
+            ", yield=" + yield +
+            ", income=" + income +
+            ", amountAtTerm=" + amountAtTerm +
             '}';
     }
 }

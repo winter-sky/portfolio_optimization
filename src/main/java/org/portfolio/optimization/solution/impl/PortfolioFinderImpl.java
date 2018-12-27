@@ -3,7 +3,6 @@ package org.portfolio.optimization.solution.impl;
 import org.portfolio.optimization.POException;
 import org.portfolio.optimization.lp.*;
 import org.portfolio.optimization.lp.impl.LpSolveLpProblemSolver;
-import org.portfolio.optimization.lp.impl.LpUtils;
 import org.portfolio.optimization.model.Instrument;
 import org.portfolio.optimization.potfolio.Portfolio;
 import org.portfolio.optimization.potfolio.PortfolioInstrument;
@@ -140,6 +139,8 @@ public class PortfolioFinderImpl implements PortfolioFinder {
         List<PortfolioInstrument> lst = new ArrayList<>();
 
         double totalAmount = 0;
+        double totalIncome = 0;
+        double totalAmountAtTerm = 0;
 
         for (int i = 0; i < instrs.length; i++) {
             if (Double.compare(arr[i], 0) > 0) {
@@ -147,9 +148,14 @@ public class PortfolioFinderImpl implements PortfolioFinder {
 
                 pi.setInstrument(instrs[i]);
                 pi.setQuantity((int)arr[i]);
-                pi.setTotalAmount(instrs[i].getMinimalLot() * pi.getQuantity());
+                pi.setAmount(instrs[i].getMinimalLot() * pi.getQuantity());
+                pi.setYield(instrs[i].getYieldCurve()[task.getTerm()]);
+                pi.setIncome(pi.getAmount() * pi.getYield());
+                pi.setAmountAtTerm(pi.getAmount() + pi.getIncome());
 
-                totalAmount += pi.getTotalAmount();
+                totalAmount += pi.getAmount();
+                totalIncome += pi.getIncome();
+                totalAmountAtTerm += pi.getAmountAtTerm();
 
                 lst.add(pi);
             }
@@ -162,6 +168,8 @@ public class PortfolioFinderImpl implements PortfolioFinder {
         p.setRisk(task.getRisk());
         p.setPortfolioInstruments(lst);
         p.setTotalAmount(totalAmount);
+        p.setIncome(totalIncome);
+        p.setTotalAmountAtTerm(totalAmountAtTerm);
 
         return p;
     }

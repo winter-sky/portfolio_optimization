@@ -15,6 +15,12 @@ public class Portfolio {
 
     private Risk risk;
 
+    private double yield;
+
+    private double income;
+
+    private double totalAmountAtTerm;
+
     public List<PortfolioInstrument> getPortfolioInstruments() {
         return portfolioInstruments;
     }
@@ -55,6 +61,30 @@ public class Portfolio {
         this.risk = risk;
     }
 
+    public double getYield() {
+        return yield;
+    }
+
+    public void setYield(double yield) {
+        this.yield = yield;
+    }
+
+    public double getIncome() {
+        return income;
+    }
+
+    public void setIncome(double income) {
+        this.income = income;
+    }
+
+    public double getTotalAmountAtTerm() {
+        return totalAmountAtTerm;
+    }
+
+    public void setTotalAmountAtTerm(double totalAmountAtTerm) {
+        this.totalAmountAtTerm = totalAmountAtTerm;
+    }
+
     @Override
     public String toString() {
         return "Portfolio{" +
@@ -63,6 +93,9 @@ public class Portfolio {
             ", maxAmount=" + maxAmount +
             ", term=" + term +
             ", risk=" + risk +
+            ", yield=" + yield +
+            ", income=" + income +
+            ", totalAmountAtTerm=" + totalAmountAtTerm +
             '}';
     }
 }

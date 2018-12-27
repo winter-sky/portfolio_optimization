@@ -41,12 +41,17 @@ public class SolutionUtil {
             .append(", Type: ").append(pi.getInstrument().getInstrumentType())
             .append(", Quantity: ").append(pi.getQuantity())
             .append(", Price: ").append(pi.getInstrument().getMinimalLot())
-            .append(", Amount: ").append(pi.getTotalAmount());
+            .append(", Amount: ").append(pi.getAmount())
+            .append(", Yield: ").append(pi.getYield()).append('%')
+            .append(", Income: ").append(pi.getIncome())
+            .append(", Amount at term: ").append(pi.getAmountAtTerm());
         }
 
         sb.append("\n===================================");
 
         sb.append("\nTotal amount: ").append(p.getTotalAmount());
+        sb.append("\nTotal income: ").append(p.getIncome());
+        sb.append("\nTotal amount at term: ").append(p.getTotalAmountAtTerm());
 
         return sb.toString();
     }
