@@ -3,19 +3,26 @@ package org.portfolio.optimization.solution.impl;
 import org.portfolio.optimization.POException;
 import org.portfolio.optimization.lp.*;
 import org.portfolio.optimization.lp.impl.LpSolveLpProblemSolver;
+import org.portfolio.optimization.lp.impl.LpUtils;
 import org.portfolio.optimization.model.Instrument;
 import org.portfolio.optimization.potfolio.Portfolio;
 import org.portfolio.optimization.potfolio.PortfolioInstrument;
 import org.portfolio.optimization.solution.PortfolioFinder;
 import org.portfolio.optimization.solution.PortfolioTask;
 import org.portfolio.optimization.solution.Risk;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class PortfolioFinderImpl implements PortfolioFinder {
+    private static final Logger log = LoggerFactory.getLogger(PortfolioFinderImpl.class);
+
     @Override
     public Portfolio find(PortfolioTask task) throws POException {
+        log.info("Building porfolio process started [task={}]", task);
+
         validateTask(task);
 
         Instrument[] instrs = task.getInstrument();
@@ -51,7 +58,9 @@ public class PortfolioFinderImpl implements PortfolioFinder {
 
         LpProblemResult res = solver.solve();
 
-        return processResult(res, instrs);
+        log.info("Linear programming solution found [result={}]", res);
+
+        return processResult(res, instrs, task);
     }
 
     private void addTargetFunction(LpProblemSolver solver, int size, Instrument[] instrs, double[] yield) throws POException {
@@ -125,18 +134,22 @@ public class PortfolioFinderImpl implements PortfolioFinder {
         solver.addConstraint(new LpProblemConstraint(coeff, Relation.EQ, 0));
     }
 
-    private Portfolio processResult(LpProblemResult res, Instrument[] instrs) {
+    private Portfolio processResult(LpProblemResult res, Instrument[] instrs, PortfolioTask task) {
         double[] arr = res.getSolution();
 
         List<PortfolioInstrument> lst = new ArrayList<>();
 
+        double totalAmount = 0;
+
         for (int i = 0; i < instrs.length; i++) {
-            if (Double.compare(0, arr[i]) > 0) {
+            if (Double.compare(arr[i], 0) > 0) {
                 PortfolioInstrument pi = new PortfolioInstrument();
 
                 pi.setInstrument(instrs[i]);
                 pi.setQuantity((int)arr[i]);
                 pi.setTotalAmount(instrs[i].getMinimalLot() * pi.getQuantity());
+
+                totalAmount += pi.getTotalAmount();
 
                 lst.add(pi);
             }
@@ -144,8 +157,11 @@ public class PortfolioFinderImpl implements PortfolioFinder {
 
         Portfolio p = new Portfolio();
 
+        p.setMaxAmount(task.getMaxAmount());
+        p.setTerm(task.getTerm());
+        p.setRisk(task.getRisk());
         p.setPortfolioInstruments(lst);
-        p.setTotalAmount(res.getObjective());
+        p.setTotalAmount(totalAmount);
 
         return p;
     }
@@ -198,7 +214,7 @@ public class PortfolioFinderImpl implements PortfolioFinder {
         }
 
         if (arr.length < term) {
-            throw  new POException(name + " size is less than requested term [size=" + arr.length + "minstrument=" + instr + ']');
+            throw  new POException(name + " size is less than requested term [size=" + arr.length + ", instrument=" + instr + ']');
         }
 
         if (size != -1) {
