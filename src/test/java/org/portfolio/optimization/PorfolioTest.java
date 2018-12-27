@@ -77,6 +77,30 @@ public class PorfolioTest {
     }
 
     /**
+     * In this example, high risk is accepted
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testPortfolio4() throws Exception {
+        testPortfolio(100000, 4, 0.9, 0.01);
+        testPortfolio(100000, 4, 0.9, 0.05);
+        testPortfolio(100000, 4, 0.9, 0.5);
+    }
+
+    /**
+     * In this example, high risk is accepted
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testPortfolio5() throws Exception {
+        testPortfolio(100000, 4, 0.5, 0.05);
+        testPortfolio(100000, 4, 0.9, 0.05);
+        testPortfolio(100000, 4, 0.95, 0.05);
+    }
+
+    /**
      *
      * @param maxAmount Maximum amount of investments.
      * @param term Term (period of investments).

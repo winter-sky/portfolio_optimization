@@ -51,7 +51,7 @@ public class PortfolioFinderImpl implements PortfolioFinder {
 
         addMaxAmountConstaint(solver, size, instrs, task.getMaxAmount());
         addAuxConstraint(solver, size, instrs);
-        addRiskContraint(solver, size, riskArr, task.getRisk(), n);
+        addRiskContraint(solver, size, instrs, riskArr, task.getRisk(), n);
 
         addTargetFunction(solver, size, instrs, yield);
 
@@ -111,7 +111,7 @@ public class PortfolioFinderImpl implements PortfolioFinder {
         solver.addConstraint(new LpProblemConstraint(coeff, Relation.EQ, maxAmount));
     }
 
-    private void addRiskContraint(LpProblemSolver solver, int size, double[] riskArr, Risk risk, int n) throws POException {
+    private void addRiskContraint(LpProblemSolver solver, int size, Instrument[] instrs, double[] riskArr, Risk risk, int n) throws POException {
         // Risk constraint.
         // Sum [I in N] (cr (j, i) /(Sum[I in N](cr (j, i)) – br) * x[i] = -y2;
         double[] coeff = new double[size];
@@ -123,7 +123,7 @@ public class PortfolioFinderImpl implements PortfolioFinder {
                 cf += riskArr[i];
             }
 
-            cf = cf / (cf - risk.getProbability());
+            cf = cf * instrs[i].getMinimalLot() / (cf - risk.getProbability());
 
             coeff[i] = cf;
         }
