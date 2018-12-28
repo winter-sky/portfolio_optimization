@@ -4,16 +4,22 @@ import org.junit.Test;
 import org.portfolio.optimization.model.Instrument;
 import org.portfolio.optimization.solution.impl.SolutionUtil;
 
-import java.util.Arrays;
-
 public class ProbablityTest {
     @Test
     public void testProbability() {
         Instrument[] instrs = TestUtils.TEST_INSTRUMENTS;
 
+        double[][] deltaProb = buildProbabilityDelta(instrs);
+
+        TestUtils.print(deltaProb);
+
+        SolutionUtil.mix2(deltaProb, SolutionUtil.DFLT_LOSS_SCALE);
+    }
+
+    private double[][] buildProbabilityDelta(Instrument[] instrs) {
         double[][] deltaProb = new double[instrs[0].getRiskCurve().length][instrs.length];
 
-        for (int i = 0; i < instrs[0].getRiskCurve().length ; i++) {
+        for (int i = 0; i < instrs[0].getRiskCurve().length; i++) {
             deltaProb[i] = new double[instrs.length];
         }
 
@@ -30,16 +36,14 @@ public class ProbablityTest {
             }
         }
 
-        print(deltaProb);
-
-        SolutionUtil.mix2(deltaProb, SolutionUtil.DFLT_LOSS_SCALE);
+        return deltaProb;
     }
 
     @Test
     public void testMix() throws Exception {
         double[][] arr = {{1., 2., 3.},{4., 5., 6.},{7., 8., 9.}};
 
-        print(arr);
+        TestUtils.print(arr);
 
         SolutionUtil.mix(arr);
     }
@@ -48,7 +52,7 @@ public class ProbablityTest {
     public void testMix2() throws Exception {
         double[][] arr = {{1., 2., 3.},{4., 5., 6.}};
 
-        print(arr);
+        TestUtils.print(arr);
 
         SolutionUtil.mix(arr);
     }
@@ -57,14 +61,9 @@ public class ProbablityTest {
     public void testMix3() throws Exception {
         double[][] arr = {{1., 2.},{4., 5.},{7., 8.}};
 
-        print(arr);
+        TestUtils.print(arr);
 
         SolutionUtil.mix(arr);
     }
 
-    private void print(double[][] arr) {
-        for (int i = 0; i < arr.length; i++) {
-            System.out.println(Arrays.toString(arr[i]));
-        }
-    }
 }

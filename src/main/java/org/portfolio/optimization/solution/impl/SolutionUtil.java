@@ -171,4 +171,24 @@ public class SolutionUtil {
 
         System.out.println("Res: " + Arrays.toString(riskCurve));
     }
+
+    public static double[][] buildProbabilityDelta(double[][] riskCurves) {
+        int n = riskCurves.length;
+        int m = riskCurves[0].length;
+
+        double[][] deltaProb = new double[n][m];
+
+        for (int j = 0; j < m ; j++) {
+            for (int i = 0; i < n ; i++) {
+                if (i == 0) {
+                    deltaProb[n - 1][j] = riskCurves[n - 1][j];
+                }
+                else {
+                    deltaProb[n - 1 - i][j] = riskCurves[n - 1 - i][j] - riskCurves[n - i][j];
+                }
+            }
+        }
+
+        return deltaProb;
+    }
 }

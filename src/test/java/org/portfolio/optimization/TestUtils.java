@@ -3,6 +3,11 @@ package org.portfolio.optimization;
 import org.portfolio.optimization.model.Instrument;
 import org.portfolio.optimization.model.InstrumentType;
 import org.portfolio.optimization.model.InstrumentUtil;
+import org.portfolio.optimization.solution.impl.SolutionUtil;
+
+import java.util.Arrays;
+
+import static org.junit.Assert.assertEquals;
 
 public class TestUtils {
     public static Instrument[] TEST_INSTRUMENTS = new Instrument[]{
@@ -39,4 +44,24 @@ public class TestUtils {
             new double[] {0.999, 0.001, 0.001, 0.001, 0.001, 0.001, 0.001, 0.001, 0.001, 0.001}
         )
     };
+
+    public static void assertArraysEquals(double[][] arr1, double[][] arr2) {
+        assertEquals(arr1.length, arr2.length);
+
+        for (int i = 0; i < arr1.length ; i++) {
+            for (int j = 0; j < arr1[i].length; j++) {
+                double val1 = SolutionUtil.roundProb(arr1[i][j]);
+                double val2 = SolutionUtil.roundProb(arr2[i][j]);
+
+                assertEquals("Different elements [i=" + i + ", j=" + j + ", val1=" + val1 + ", val2=" + val2 + ']',
+                    0, Double.compare(val1, val2));
+            }
+        }
+    }
+
+    public static void print(double[][] arr) {
+        for (int i = 0; i < arr.length; i++) {
+            System.out.println(Arrays.toString(arr[i]));
+        }
+    }
 }
