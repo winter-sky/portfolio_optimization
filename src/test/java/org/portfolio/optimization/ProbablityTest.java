@@ -32,7 +32,7 @@ public class ProbablityTest {
 
         print(deltaProb);
 
-        SolutionUtil.mix(deltaProb);
+        SolutionUtil.mix2(deltaProb, SolutionUtil.DFLT_LOSS_SCALE);
     }
 
     @Test

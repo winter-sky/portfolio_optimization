@@ -14,6 +14,8 @@ public class SolutionUtil {
 
     private static final double DFLT_SCALE_FACTOR = 100;
 
+    private static final double DFLT_SCALE_FACTOR_PROBABILITY = 1000000;
+
     public static int getLossIndex(final Risk risk, double[] lossScale) {
         return getLossIndex(risk.getLoss(), lossScale);
     }
@@ -21,8 +23,10 @@ public class SolutionUtil {
     public static int getLossIndex(double loss, double[] lossScale) {
         assert lossScale != null;
 
-        return  Arrays.stream(lossScale).boxed().filter(d -> d.compareTo(loss) <= 0)
+        int res = Arrays.stream(lossScale).boxed().filter(d -> d.compareTo(loss) <= 0)
             .collect(Collectors.toList()).size();
+
+        return res > 0 ? res -1 : 0;
     }
 
     public static String printPortfolio(Portfolio p) {
@@ -64,6 +68,10 @@ public class SolutionUtil {
 
     public static double round(double val) {
         return round(val, DFLT_SCALE_FACTOR);
+    }
+
+    public static double roundProb(double val) {
+        return round(val, DFLT_SCALE_FACTOR_PROBABILITY);
     }
 
     private static double round(double val, double scaleFactor) {
@@ -111,16 +119,26 @@ public class SolutionUtil {
     }
 
     public static void mix2(double[][] deltaProb, double[] lossScale) {
-        int indices[] = new int[deltaProb.length];
+        int indices[] = new int[deltaProb[0].length];
 
         List<Double> res = new ArrayList<>();
+
+        double[] riskCurve = new double[lossScale.length];
 
         while(true) {
             double val = deltaProb[indices[0]][0];
 
+            double loss = 0;
+
             for (int i = 1; i < indices.length; i++) {
                 val = val * deltaProb[indices[i]][i];
+
+                loss += lossScale[indices[i]];
             }
+
+            int idx = SolutionUtil.getLossIndex(loss, lossScale);
+
+            riskCurve[idx] += val;
 
             res.add(val);
 
@@ -129,7 +147,7 @@ public class SolutionUtil {
             boolean incremented = false;
 
             for (int i = 0; i < indices.length; i++) {
-                if (indices[i] < deltaProb[0].length - 1) {
+                if (indices[i] < deltaProb.length - 1) {
                     indices[i]++;
 
                     for (int j = 0; j < i; j++) {
@@ -147,6 +165,10 @@ public class SolutionUtil {
             }
         }
 
-        System.out.println("Res: " + res);
+        for (int i = 0; i < riskCurve.length; i++) {
+            riskCurve[i] = roundProb(riskCurve[i]);
+        }
+
+        System.out.println("Res: " + Arrays.toString(riskCurve));
     }
 }
