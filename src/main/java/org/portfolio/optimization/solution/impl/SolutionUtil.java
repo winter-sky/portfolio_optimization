@@ -118,7 +118,7 @@ public class SolutionUtil {
         System.out.println("Res: " + res);
     }
 
-    public static void mix2(double[][] deltaProb, double[] lossScale) {
+    public static double[] mix2(double[][] deltaProb, double[] lossScale) {
         int indices[] = new int[deltaProb[0].length];
 
         List<Double> res = new ArrayList<>();
@@ -126,15 +126,19 @@ public class SolutionUtil {
         double[] riskCurve = new double[lossScale.length];
 
         while(true) {
-            double val = deltaProb[indices[0]][0];
+            double val = 1;
 
             double loss = 0;
 
-            for (int i = 1; i < indices.length; i++) {
+            for (int i = 0; i < indices.length; i++) {
                 val = val * deltaProb[indices[i]][i];
 
                 loss += lossScale[indices[i]];
+
+                System.out.println("indices[i]=" + indices[i] + ", loss=" + loss);
             }
+
+            loss = loss / indices.length;
 
             int idx = SolutionUtil.getLossIndex(loss, lossScale);
 
@@ -142,7 +146,7 @@ public class SolutionUtil {
 
             res.add(val);
 
-            System.out.println("value added [val=" + val + ", indices=" + Arrays.toString(indices) + ']');
+            System.out.println("value added [val=" + val + ", loss=" + loss + ", idx=" + idx + ", indices=" + Arrays.toString(indices) + ", risk-curve=" + Arrays.toString(riskCurve) + ']');
 
             boolean incremented = false;
 
@@ -170,6 +174,16 @@ public class SolutionUtil {
         }
 
         System.out.println("Res: " + Arrays.toString(riskCurve));
+
+        return riskCurve;
+    }
+
+    public static double[] buildSummaryRiskCurve(double[][] riskCurves, double[] lossScale) {
+//        double[][] delta = buildProbabilityDelta(riskCurves);
+//
+//        print(delta);
+
+        return mix2(riskCurves, lossScale);
     }
 
     public static double[][] buildProbabilityDelta(double[][] riskCurves) {
@@ -184,11 +198,17 @@ public class SolutionUtil {
                     deltaProb[n - 1][j] = riskCurves[n - 1][j];
                 }
                 else {
-                    deltaProb[n - 1 - i][j] = riskCurves[n - 1 - i][j] - riskCurves[n - i][j];
+                    deltaProb[n - 1 - i][j] = roundProb(riskCurves[n - 1 - i][j] - riskCurves[n - i][j]);
                 }
             }
         }
 
         return deltaProb;
+    }
+
+    public static void print(double[][] arr) {
+        for (int i = 0; i < arr.length; i++) {
+            System.out.println(Arrays.toString(arr[i]));
+        }
     }
 }
