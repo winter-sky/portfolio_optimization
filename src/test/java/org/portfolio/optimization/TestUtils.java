@@ -25,7 +25,7 @@ public class TestUtils {
             InstrumentType.ACTION,
             1050.0,
             new double[] {0.01, 0.014, 0.016, 0.019, 0.024, 0.027},
-            new double[] {0.72, 0.13, 0.09, 0.07, 0.01, 0.009, 0.008, 0.007, 0.006, 0.0005}
+            new double[] {0.72, 0.19, 0.09, 0.07, 0.01, 0.009, 0.008, 0.007, 0.006, 0.0005}
         ),
         InstrumentUtil.mkInstrument(
             1,

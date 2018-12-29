@@ -161,6 +161,8 @@ public class PortfolioFinderImpl implements PortfolioFinder {
             }
         }
 
+        double[] riskCurve = buildRiskCurve(lst, totalAmount, task.getLossScale());
+
         Portfolio p = new Portfolio();
 
         p.setMaxAmount(task.getMaxAmount());
@@ -171,8 +173,48 @@ public class PortfolioFinderImpl implements PortfolioFinder {
         p.setPortfolioInstruments(lst);
         p.setIncome(SolutionUtil.round(totalIncome));
         p.setYield(SolutionUtil.round(totalIncome * 100 / totalAmount));
+        p.setRiskCurve(riskCurve);
+        p.setLossScale(task.getLossScale());
 
         return p;
+    }
+
+    /**
+     * Builds risk curve for entire portfolio.
+     *
+     * @return TBD
+     */
+    private double[] buildRiskCurve(List<PortfolioInstrument> pis, double totalAmount, double[] lossScale) {
+        double[] riskCurve = pis.get(0).getInstrument().getRiskCurve();
+
+        int size = pis.size();
+
+        double[] weights = new double[size];
+
+        for (int i = 0; i < size; i++) {
+            PortfolioInstrument pi = pis.get(i);
+
+            weights[i] = SolutionUtil.roundProb(pi.getAmount() / totalAmount);
+        }
+
+        double[][] riskCurves = new double[lossScale.length][];
+
+        for (int i = 0; i < riskCurve.length; i++) {
+            riskCurves[i] = new double[size];
+
+            for (int j = 0; j < size; j++) {
+                riskCurves[i][j] = pis.get(j).getInstrument().getRiskCurve()[i];
+            }
+        }
+
+        try {
+            return SolutionUtil.buildSummaryRiskCurve(riskCurves, lossScale, weights);
+        }
+        catch (POException e) {
+            log.error("Cannot calculate risk curve for portfolio.", e);
+
+            return null;
+        }
     }
 
     private void validateTask(PortfolioTask task) throws POException {

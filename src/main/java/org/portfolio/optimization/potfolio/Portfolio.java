@@ -2,6 +2,7 @@ package org.portfolio.optimization.potfolio;
 
 import org.portfolio.optimization.solution.Risk;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class Portfolio {
@@ -20,6 +21,10 @@ public class Portfolio {
     private double yield;
 
     private double income;
+
+    private double[] riskCurve;
+
+    private double[] lossScale;
 
     public List<PortfolioInstrument> getPortfolioInstruments() {
         return portfolioInstruments;
@@ -85,17 +90,34 @@ public class Portfolio {
         this.amountAtTerm = amountAtTerm;
     }
 
+    public double[] getRiskCurve() {
+        return riskCurve;
+    }
+
+    public void setRiskCurve(double[] riskCurve) {
+        this.riskCurve = riskCurve;
+    }
+
+    public double[] getLossScale() {
+        return lossScale;
+    }
+
+    public void setLossScale(double[] lossScale) {
+        this.lossScale = lossScale;
+    }
+
     @Override
     public String toString() {
         return "Portfolio{" +
             "portfolioInstruments=" + portfolioInstruments +
-            ", amount=" + amount +
             ", maxAmount=" + maxAmount +
+            ", amount=" + amount +
+            ", amountAtTerm=" + amountAtTerm +
             ", term=" + term +
             ", risk=" + risk +
             ", yield=" + yield +
             ", income=" + income +
-            ", amountAtTerm=" + amountAtTerm +
+            ", riskCurve=" + Arrays.toString(riskCurve) +
             '}';
     }
 }

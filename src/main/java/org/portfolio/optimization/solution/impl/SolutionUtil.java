@@ -1,8 +1,11 @@
 package org.portfolio.optimization.solution.impl;
 
+import org.portfolio.optimization.POException;
 import org.portfolio.optimization.potfolio.Portfolio;
 import org.portfolio.optimization.potfolio.PortfolioInstrument;
 import org.portfolio.optimization.solution.Risk;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,6 +13,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class SolutionUtil {
+    private static final Logger log = LoggerFactory.getLogger(SolutionUtil.class);
+
     public static final double[] DFLT_LOSS_SCALE = new double[] {0, 0.05, 0.1, 0.2, 0.25, 0.5, 0.75, 0.9, 0.95, 1.0 };
 
     private static final double DFLT_SCALE_FACTOR = 100;
@@ -58,6 +63,33 @@ public class SolutionUtil {
         sb.append("\nTotal income: ").append(p.getIncome());
         sb.append("\nTotal yield: ").append(p.getYield()).append('%');
         sb.append("\nTotal amount at term: ").append(p.getAmountAtTerm());
+        sb.append("\nRisk curve: ").append(printRiskCurve(p.getRiskCurve(), p.getLossScale()));
+        sb.append("\nRisk at target: ").append(p.getRiskCurve() != null ?
+            p.getRiskCurve()[getLossIndex(p.getRisk().getLoss(), p.getLossScale())] : null);
+
+        return sb.toString();
+    }
+
+    public static String printRiskCurve(double[] riskCurve, double[] lossScale)  {
+        assert riskCurve != null;
+        assert lossScale != null;
+
+        assert riskCurve.length == lossScale.length;
+
+        int n = lossScale.length;
+
+        StringBuilder sb = new StringBuilder();
+
+        for (int i = 0; i < n; i++) {
+            double loss = round(lossScale[i] * 100);
+            double prob = roundProb(riskCurve[i] * 100);
+
+            sb.append(prob).append("%(").append(loss).append("%)");
+
+            if (i < n - 1) {
+                sb.append(", ");
+            }
+        }
 
         return sb.toString();
     }
@@ -178,12 +210,110 @@ public class SolutionUtil {
         return riskCurve;
     }
 
+
     public static double[] buildSummaryRiskCurve(double[][] riskCurves, double[] lossScale) {
 //        double[][] delta = buildProbabilityDelta(riskCurves);
 //
 //        print(delta);
 
         return mix2(riskCurves, lossScale);
+    }
+
+    /**
+     *
+     * @param riskCurves Risk curves for each instrument in the portfolio. Note: columns correspond to each instrument,
+     *  each row correspond to loss scale.
+     * @param lossScale Loss scale
+     * @param weight Weight coefficient for each instrument in the portfolio.
+     * @return
+     * @throws POException
+     */
+    public static double[] buildSummaryRiskCurve(double[][] riskCurves, double[] lossScale, double[] weight)
+        throws POException {
+        if (riskCurves == null) {
+            throw new POException("Risk curve is null.");
+        }
+
+        if (riskCurves.length == 0) {
+            throw new POException("Risk curve is empty.");
+        }
+
+        if (lossScale == null) {
+            throw new POException("Loss scale is null.");
+        }
+
+        if (weight == null) {
+            throw new POException("Weight array  is null.");
+        }
+
+        if (riskCurves.length != lossScale.length) {
+            throw new POException("Arrays size mismatch [risk-curves-length=" + riskCurves.length
+                + ", loss-scale-length=" + lossScale.length + ']');
+        }
+
+        if (riskCurves[0].length != weight.length) {
+            throw new POException("Arrays size mismatch [risk-curves-length=" + riskCurves.length
+                + ", weight-length=" + weight.length + ']');
+        }
+
+        int indices[] = new int[riskCurves[0].length];
+
+        List<Double> res = new ArrayList<>();
+
+        double[] riskCurve = new double[lossScale.length];
+
+        while(true) {
+            double val = 1;
+
+            double loss = 0;
+
+            for (int i = 0; i < indices.length; i++) {
+                val = val * riskCurves[indices[i]][i];
+
+                loss += lossScale[indices[i]] * weight[i];
+
+               log.debug("Indices[i]={}, loss={}", indices[i], loss);
+            }
+
+            loss = loss / indices.length;
+
+            int idx = SolutionUtil.getLossIndex(loss, lossScale);
+
+            riskCurve[idx] += val;
+
+            res.add(val);
+
+            log.debug("Value added [val={}, loss={}, idx={}, indices={}, risk-curve={}]", val, loss,  idx,
+                Arrays.toString(indices), Arrays.toString(riskCurve));
+
+            boolean incremented = false;
+
+            for (int i = 0; i < indices.length; i++) {
+                if (indices[i] < riskCurves.length - 1) {
+                    indices[i]++;
+
+                    for (int j = 0; j < i; j++) {
+                        indices[j] = 0;
+                    }
+
+                    incremented = true;
+
+                    break;
+                }
+            }
+
+            if (!incremented) {
+                break;
+            }
+        }
+
+        for (int i = 0; i < riskCurve.length; i++) {
+            riskCurve[i] = roundProb(riskCurve[i]);
+        }
+
+        System.out.println("Res: " + Arrays.toString(riskCurve));
+
+        return riskCurve;
     }
 
     public static double[][] buildProbabilityDelta(double[][] riskCurves) {
