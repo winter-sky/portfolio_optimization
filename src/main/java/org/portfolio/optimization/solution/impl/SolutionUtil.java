@@ -41,7 +41,7 @@ public class SolutionUtil {
 
         sb.append("\nTerm of investitions: ").append(p.getTerm());
         sb.append("\nMaximum amount: ").append(p.getMaxAmount());
-        sb.append("\nAcceptable risk: ").append(100 - toPercent(p.getRisk().getLoss())).append("% of loss with probability ")
+        sb.append("\nAcceptable risk: ").append(toPercent(p.getRisk().getLoss())).append("% of loss with probability ")
             .append(toPercent(p.getRisk().getProbability())).append('%');
 
         sb.append("\n===================================");
@@ -69,7 +69,10 @@ public class SolutionUtil {
     }
 
     public static String printRiskCurve(double[] riskCurve, double[] lossScale)  {
-        assert riskCurve != null;
+        if (riskCurve == null) {
+            return null;
+        }
+
         assert lossScale != null;
 
         assert riskCurve.length == lossScale.length;

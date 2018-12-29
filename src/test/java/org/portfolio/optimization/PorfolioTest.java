@@ -15,7 +15,7 @@ public class PorfolioTest {
 
     @Test
     public void testPortfolio1() throws Exception {
-        testPortfolio(20000, 4, 0.9, 0.05);
+        testPortfolio(20000, 4, 0.05, 0.05);
     }
 
     /**
@@ -45,9 +45,9 @@ public class PorfolioTest {
      */
     @Test
     public void testPortfolio4() throws Exception {
-        testPortfolio(100000, 4, 0.9, 0.01);
-        testPortfolio(100000, 4, 0.9, 0.05);
-        testPortfolio(100000, 4, 0.9, 0.5);
+        testPortfolio(100000, 4, 0.1, 0.01);
+        testPortfolio(100000, 4, 0.1, 0.05);
+        testPortfolio(100000, 4, 0.1, 0.5);
     }
 
     /**
@@ -58,8 +58,9 @@ public class PorfolioTest {
     @Test
     public void testPortfolio5() throws Exception {
         testPortfolio(100000, 4, 0.5, 0.05);
-        testPortfolio(100000, 4, 0.9, 0.05);
-        testPortfolio(100000, 4, 0.95, 0.05);
+        testPortfolio(100000, 4, 0.1, 0.05);
+        testPortfolio(100000, 4, 0.05, 0.05);
+        testPortfolio(100000, 4, 0.04995, 0.05);
     }
 
     /**

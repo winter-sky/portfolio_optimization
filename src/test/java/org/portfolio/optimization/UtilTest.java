@@ -17,6 +17,7 @@ public class UtilTest {
         assertEquals(3, SolutionUtil.getLossIndex(0.24999, SolutionUtil.DFLT_LOSS_SCALE));
         assertEquals(3, SolutionUtil.getLossIndex(0.2000, SolutionUtil.DFLT_LOSS_SCALE));
         assertEquals(2, SolutionUtil.getLossIndex(0.1999, SolutionUtil.DFLT_LOSS_SCALE));
+        assertEquals(1, SolutionUtil.getLossIndex(0.05, SolutionUtil.DFLT_LOSS_SCALE));
     }
 
     @Test
