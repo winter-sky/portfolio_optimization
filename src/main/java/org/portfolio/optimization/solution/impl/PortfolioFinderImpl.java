@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class PortfolioFinderImpl implements PortfolioFinder {
@@ -240,6 +241,8 @@ public class PortfolioFinderImpl implements PortfolioFinder {
         for (Instrument inst : insts) {
             yeildCurveSize = checkArray(inst.getYieldCurve(), yeildCurveSize, term, "Yeild curve", inst);
             riskCurveSize = checkArray(inst.getRiskCurve(), riskCurveSize, term, "Risk curve", inst);
+
+            validateRiskCurve(inst.getRiskCurve());
         }
 
         if (task.getMaxAmount() <= 0) {
@@ -276,5 +279,14 @@ public class PortfolioFinderImpl implements PortfolioFinder {
         }
 
         return arr.length;
+    }
+
+    private void validateRiskCurve(double[] riskCurve) throws POException {
+        double sum = SolutionUtil.roundProb(Arrays.stream(riskCurve).sum());
+
+        if (Double.compare(1., sum) != 0) {
+            throw new POException("Invalid risk curve. Sum of all probablilites is not 1 [sum=" + sum + ", risk-curve="
+                + Arrays.toString(riskCurve) + ']');
+        }
     }
 }

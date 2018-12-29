@@ -64,8 +64,6 @@ public class SolutionUtil {
         sb.append("\nTotal yield: ").append(p.getYield()).append('%');
         sb.append("\nTotal amount at term: ").append(p.getAmountAtTerm());
         sb.append("\nRisk curve: ").append(printRiskCurve(p.getRiskCurve(), p.getLossScale()));
-        sb.append("\nRisk at target: ").append(p.getRiskCurve() != null ?
-            p.getRiskCurve()[getLossIndex(p.getRisk().getLoss(), p.getLossScale())] : null);
 
         return sb.toString();
     }
