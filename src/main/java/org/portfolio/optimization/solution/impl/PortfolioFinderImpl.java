@@ -112,28 +112,6 @@ public class PortfolioFinderImpl implements PortfolioFinder {
         solver.addConstraint(new LpProblemConstraint(coeff, Relation.EQ, maxAmount));
     }
 
-//    private void addRiskContraint(LpProblemSolver solver, int size, Instrument[] instrs, double[] riskArr, Risk risk, int n) throws POException {
-//        // Risk constraint.
-//        // Sum [I in N] (cr (j, i) /(Sum[I in N](cr (j, i)) – br) * x[i] = -y2;
-//        double[] coeff = new double[size];
-//
-//        for (int i = 0; i < n; i++) {
-//            double cf = 0;
-//
-//            for (int j = 0; j < n; j++) {
-//                cf += riskArr[i];
-//            }
-//
-//            cf = cf * instrs[i].getMinimalLot() / (cf - risk.getProbability());
-//
-//            coeff[i] = cf;
-//        }
-//
-//        coeff[2 * n + 1] = 1;
-//
-//        solver.addConstraint(new LpProblemConstraint(coeff, Relation.EQ, 0));
-//    }
-
     private void addRiskContraint(LpProblemSolver solver, int size, Instrument[] instrs, double[] riskArr, Risk risk,
         int n, double[] lossScale) throws POException {
         // Risk constraint.
@@ -146,7 +124,7 @@ public class PortfolioFinderImpl implements PortfolioFinder {
 
             coeff[i] = (risk.getProbability() - riskProb) * instrs[i].getMinimalLot();
 
-            log.info("Coefficient added [instr=" + instrs[i].getName() + ", index=" + idx + ", risk-prob=" + riskProb
+            log.debug("Coefficient added [instr=" + instrs[i].getName() + ", index=" + idx + ", risk-prob=" + riskProb
                 + ", coeff=" + coeff[i] + ']');
         }
 

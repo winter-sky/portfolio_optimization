@@ -60,7 +60,6 @@ public class PorfolioTest {
         testPortfolio(100000, 4, 0.5, 0.05);
         testPortfolio(100000, 4, 0.1, 0.05);
         testPortfolio(100000, 4, 0.05, 0.05);
-        testPortfolio(100000, 4, 0.04995, 0.05);
     }
 
     /**
