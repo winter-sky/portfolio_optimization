@@ -25,7 +25,7 @@ public class PorfolioTest {
      */
     @Test
     public void testPortfolio2() throws Exception {
-        testPortfolio(100000, 2, 0.999, 0.05);
+        testPortfolio(100000, 2, 0.05, 0.05);
     }
 
     /**
@@ -35,7 +35,7 @@ public class PorfolioTest {
      */
     @Test
     public void testPortfolio3() throws Exception {
-        testPortfolio(15000, 5, 0.5, 0.05);
+        testPortfolio(15000, 2, 0.01, 0.05);
     }
 
     /**
