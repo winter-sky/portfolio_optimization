@@ -8,7 +8,7 @@ import org.portfolio.optimization.lp.*;
 import java.util.Arrays;
 
 /**
- * TBD: add comments for LpSolveLpProlemSolver.java.
+ * Create a LpSolve instance. Call the methods of the LpSolve instance to define the problem and obtain the solution.
  */
 public class LpSolveLpProblemSolver extends LpProblemSolverAdaptor {
     /** */
@@ -27,6 +27,9 @@ public class LpSolveLpProblemSolver extends LpProblemSolverAdaptor {
      */
     public LpSolveLpProblemSolver(int size, int verbose) throws POException {
         try {
+            /**
+             * Create a LpSolve instance. Each LpSolve instance represents an optimization problem.
+             */
             solver = LpSolve.makeLp(0, size);
 
             LpSolveConfig lc = LpConfig.getConfig().getLpSolveConfig();

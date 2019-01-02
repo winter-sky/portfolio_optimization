@@ -12,7 +12,8 @@ public abstract class LpProblemSolverAdaptor implements LpProblemSolver {
      *
      * @param constraint
      */
-    protected void printConstraint(LpProblemConstraint constraint) {
+    protected void printConstraint(LpProblemConstraint constraint) {// You can replace it with the default method
+        // in the LpProblemSolver interface
         LpUtils.printConstraint(constraint.getName(), constraint.getCoeffs(), constraint.getRelation(),
                 constraint.getValue());
     }

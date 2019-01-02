@@ -6,16 +6,16 @@ import org.portfolio.optimization.lp.LpStatus;
 import java.util.Arrays;
 
 /**
- * TBD: add comments for LpProblemResultImpl.java.
+ * Represents a linear programming problem solution.
  */
 public class LpProblemResultImpl implements LpProblemResult {
     /** */
     private final LpStatus status;
 
-    /** */
+    /** Value of the target function */
     private final double objective;
 
-    /** */
+    /** The array of values ​​of the desired variables */
     private final double[] solution;
 
     /**

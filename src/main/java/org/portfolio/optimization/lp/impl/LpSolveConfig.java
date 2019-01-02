@@ -1,16 +1,23 @@
 package org.portfolio.optimization.lp.impl;
 
 public class LpSolveConfig {
-    /** */
+    /** The value that is used as a tolerance for reduced costs to determine whether a value should be considered as 0.
+     *  */
     private Double espd;
 
-    /** */
+    /** The value that is used as a tolerance for the Right Hand Side (RHS) to determine whether a value should be
+     * considered as 0.*/
     private Double espb;
 
-    /** */
+    /** The value that is used as a tolerance for rounding values to zero. */
     private Double espel;
 
-    /** */
+    /** Can by any of the following values:
+
+     EPS_TIGHT (0)	Very tight epsilon values (default)
+     EPS_MEDIUM (1)	Medium epsilon values
+     EPS_LOOSE (2)	Loose epsilon values
+     EPS_BAGGY (3)	Very loose epsilon values */
     private Integer esplevel;
 
     /**
