@@ -5,5 +5,5 @@ public enum PortfolioTaskType {
     MAXIMIZE_PROFIT,
 
     /** Minimize risk, with profit not lower than certain level set by user.*/
-    MINIMIZE_RISK
+    MINIMIZE_RISK // Not yet implemented
 }

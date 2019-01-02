@@ -8,11 +8,17 @@ import org.portfolio.optimization.lp.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Create LP solve problem with using glpk library
+ */
 public class LpSolverGlpk extends LpProblemSolverAdaptor {
     private List<LpProblemConstraint> constraints = new ArrayList<>();
 
     private double[] coeff = null;
 
+    /**
+     * Direction of optimization of the target function.
+     */
     private TargetDirection dir = null;
 
     /**

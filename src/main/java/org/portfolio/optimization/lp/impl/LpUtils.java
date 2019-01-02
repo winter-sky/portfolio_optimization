@@ -6,6 +6,9 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 
+/**
+ * Provides utility methods
+ */
 public class LpUtils {
     private static final Logger log = LoggerFactory.getLogger(LpUtils.class);
 
