@@ -8,6 +8,7 @@ import org.portfolio.optimization.potfolio.Portfolio;
 import org.portfolio.optimization.potfolio.PortfolioInstrument;
 import org.portfolio.optimization.solution.PortfolioFinder;
 import org.portfolio.optimization.solution.PortfolioTask;
+import org.portfolio.optimization.solution.PortfolioTaskType;
 import org.portfolio.optimization.solution.Risk;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,17 +51,50 @@ public class PortfolioFinderImpl implements PortfolioFinder {
 
         LpProblemSolver solver = new LpSolveLpProblemSolver(size, 0);
 
-        addMaxAmountConstaint(solver, size, instrs, task.getMaxAmount());
-        addAuxConstraint(solver, size, instrs);
-        addRiskContraint(solver, size, instrs, riskArr, task.getRisk(), n, task.getLossScale());
+        switch (task.getType()) {
+            case MAXIMIZE_PROFIT: {
+                addMaxAmountConstaint(solver, size, instrs, task.getMaxAmount());
+                addAuxConstraint(solver, size, instrs);
+                addRiskContraint(solver, size, instrs, riskArr, task.getRisk(), n, task.getLossScale());
 
-        addTargetFunction(solver, size, instrs, yield);
+                addTargetFunction(solver, size, instrs, yield);
+
+                break;
+            }
+            case MINIMIZE_RISK: {
+                addMinYieldConstraint(solver, instrs, size, yield, task.getMinYield());
+
+                break;
+            }
+
+            default: {
+                // No other types supported at the moment.
+                assert false;
+            }
+        }
 
         LpProblemResult res = solver.solve();
 
         log.info("Linear programming solution found [result={}]", res);
 
         return processResult(res, instrs, task);
+    }
+
+    private void addMinYieldConstraint(LpProblemSolver solver, Instrument[] instrs, int size, double[] yield,
+        Double minYield) throws POException {
+        // Controlled by validation.
+        assert minYield != null;
+
+        // Sum[I in N] (yc[i][t] - yd) * x[i]*p[i] >= 0
+        double[] coeff = new double[size];
+
+        int n = instrs.length;
+
+        for (int i = 0; i < n; i++) {
+            coeff[i] = (yield[i] - minYield) * instrs[i].getMinimalLot();
+        }
+
+        solver.addConstraint(new LpProblemConstraint(coeff, Relation.GE, 0));
     }
 
     private void addTargetFunction(LpProblemSolver solver, int size, Instrument[] instrs, double[] yield) throws POException {
@@ -236,6 +270,38 @@ public class PortfolioFinderImpl implements PortfolioFinder {
             throw new POException("Invalid term [term=" + term + ']');
         }
 
+        PortfolioTaskType type = task.getType();
+
+        switch (type) {
+            case MAXIMIZE_PROFIT: {
+                if (task.getRisk() == null) {
+                    throw new POException("Risk must be defined for the given task type [type=" + type
+                        + ", task=" + task + ']');
+                }
+
+                break;
+            }
+
+            case MINIMIZE_RISK: {
+                if (task.getMinYield() == null) {
+                    throw new POException("Minimal yield must be defined for the given task type [type=" + type
+                        + ", task=" + task + ']');
+                }
+
+                if (task.getMinYield() < 0) {
+                    throw new POException("Minimal yield must be non-negative [min-yield=" + task.getMinYield() +
+                        ", task=" + task + ']');
+                }
+
+                break;
+            }
+
+            default: {
+                // No other types defined.
+                assert false;
+            }
+        }
+
         int yeildCurveSize = -1;
         int riskCurveSize = -1;
 
@@ -248,14 +314,6 @@ public class PortfolioFinderImpl implements PortfolioFinder {
 
         if (task.getMaxAmount() <= 0) {
             throw new POException("Invalid max amount [max-amount=" + task.getMaxAmount() + ']');
-        }
-
-        if (task.getTerm() <= 0) {
-            throw new POException("Invalid term [term=" + task.getTerm() + ']');
-        }
-
-        if (task.getRisk() == null) {
-            throw new POException("Risk is null [task=" + task + ']');
         }
     }
 

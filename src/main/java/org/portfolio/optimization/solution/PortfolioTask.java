@@ -21,6 +21,8 @@ public class PortfolioTask {
 
     private int term;
 
+    private Double minYield;
+
     public Instrument[] getInstrument() {
         return instrument;
     }
@@ -45,6 +47,11 @@ public class PortfolioTask {
         this.maxAmount = maxAmount;
     }
 
+    /**
+     * Gets acceptable risk, for case if {@link PortfolioTaskType#MAXIMIZE_PROFIT}. For other types, <tt>null</tt>.
+     *
+     * @return Acceptable risk, or null if not applicable.
+     */
     public Risk getRisk() {
         return risk;
     }
@@ -79,6 +86,19 @@ public class PortfolioTask {
         this.lossScale = lossScale;
     }
 
+    /**
+     * Gets minimal yield, for case of {@link PortfolioTaskType#MINIMIZE_RISK}. For other types, <tt>null</tt>.
+     *
+     * @return Minimal yield of portfolio, or <tt>null</tt> if not applicable.
+     */
+    public Double getMinYield() {
+        return minYield;
+    }
+
+    public void setMinYield(Double minYield) {
+        this.minYield = minYield;
+    }
+
     @Override
     public String toString() {
         return "PortfolioTask{" +
@@ -88,6 +108,7 @@ public class PortfolioTask {
             ", maxAmount=" + maxAmount +
             ", risk=" + risk +
             ", term=" + term +
+            ", minYield=" + minYield +
             '}';
     }
 }
