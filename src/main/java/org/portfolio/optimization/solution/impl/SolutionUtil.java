@@ -3,6 +3,7 @@ package org.portfolio.optimization.solution.impl;
 import org.portfolio.optimization.POException;
 import org.portfolio.optimization.potfolio.Portfolio;
 import org.portfolio.optimization.potfolio.PortfolioInstrument;
+import org.portfolio.optimization.solution.PortfolioTaskType;
 import org.portfolio.optimization.solution.Risk;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,10 +40,29 @@ public class SolutionUtil {
 
         List<PortfolioInstrument> pis = p.getPortfolioInstruments();
 
+        PortfolioTaskType type = p.getType();
+
         sb.append("\nTerm of investitions: ").append(p.getTerm());
         sb.append("\nMaximum amount: ").append(p.getMaxAmount());
-        sb.append("\nAcceptable risk: ").append(toPercent(p.getRisk().getLoss())).append("% of loss with probability ")
-            .append(toPercent(p.getRisk().getProbability())).append('%');
+        sb.append("\nType: ").append(type);
+
+        switch (type) {
+            case MAXIMIZE_PROFIT: {
+                sb.append("\nAcceptable risk: ").append(toPercent(p.getRisk().getLoss())).append("% of loss with probability ")
+                    .append(toPercent(p.getRisk().getProbability())).append('%');
+
+                break;
+            }
+            case MINIMIZE_RISK: {
+                sb.append("\nMinimal yield: ").append(toPercent(p.getMinYield())).append('%');
+
+                break;
+            }
+
+            default: {
+                assert false;
+            }
+        }
 
         sb.append("\n===================================");
 
@@ -271,7 +291,7 @@ public class SolutionUtil {
 
                 loss += lossScale[indices[i]] * weight[i];
 
-               log.debug("Indices[i]={}, loss={}", indices[i], loss);
+                log.debug("Indices[i]={}, loss={}", indices[i], loss);
             }
 
             loss = loss / indices.length;

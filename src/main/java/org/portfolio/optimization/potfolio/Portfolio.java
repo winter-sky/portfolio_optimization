@@ -1,5 +1,6 @@
 package org.portfolio.optimization.potfolio;
 
+import org.portfolio.optimization.solution.PortfolioTaskType;
 import org.portfolio.optimization.solution.Risk;
 
 import java.util.Arrays;
@@ -25,6 +26,10 @@ public class Portfolio {
     private double[] riskCurve;
 
     private double[] lossScale;
+
+    private Double minYield;
+
+    private PortfolioTaskType type;
 
     public List<PortfolioInstrument> getPortfolioInstruments() {
         return portfolioInstruments;
@@ -106,6 +111,22 @@ public class Portfolio {
         this.lossScale = lossScale;
     }
 
+    public Double getMinYield() {
+        return minYield;
+    }
+
+    public void setMinYield(Double minYield) {
+        this.minYield = minYield;
+    }
+
+    public PortfolioTaskType getType() {
+        return type;
+    }
+
+    public void setType(PortfolioTaskType type) {
+        this.type = type;
+    }
+
     @Override
     public String toString() {
         return "Portfolio{" +
@@ -118,6 +139,9 @@ public class Portfolio {
             ", yield=" + yield +
             ", income=" + income +
             ", riskCurve=" + Arrays.toString(riskCurve) +
+            ", lossScale=" + Arrays.toString(lossScale) +
+            ", minYield=" + minYield +
+            ", type=" + type +
             '}';
     }
 }

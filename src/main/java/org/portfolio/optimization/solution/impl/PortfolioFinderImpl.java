@@ -41,18 +41,12 @@ public class PortfolioFinderImpl implements PortfolioFinder {
             yield[i] = instrs[i].getYieldCurve()[term];
         }
 
-        double[] riskArr = new double[n];
-
-        int lossIdx = SolutionUtil.getLossIndex(task.getRisk(), task.getLossScale());
-
-        for (int i = 0; i < n; i++) {
-            riskArr[i] = instrs[i].getRiskCurve()[lossIdx];
-        }
-
         LpProblemSolver solver = new LpSolveLpProblemSolver(size, 0);
 
         switch (task.getType()) {
             case MAXIMIZE_PROFIT: {
+                double[] riskArr = buildRiskArr(task, instrs);
+
                 addMaxAmountConstaint(solver, size, instrs, task.getMaxAmount());
                 addAuxConstraint(solver, size, instrs);
                 addRiskContraint(solver, size, instrs, riskArr, task.getRisk(), n, task.getLossScale());
@@ -63,6 +57,8 @@ public class PortfolioFinderImpl implements PortfolioFinder {
             }
             case MINIMIZE_RISK: {
                 addMinYieldConstraint(solver, instrs, size, yield, task.getMinYield());
+
+                addTargetFunctionMinRisk(solver, size, instrs, task.getLossScale());
 
                 break;
             }
@@ -78,6 +74,87 @@ public class PortfolioFinderImpl implements PortfolioFinder {
         log.info("Linear programming solution found [result={}]", res);
 
         return processResult(res, instrs, task);
+    }
+
+    private double[] buildRiskArr(PortfolioTask task, Instrument[] instrs) {
+        int n = instrs.length;
+
+        double[] riskArr = new double[n];
+
+        int lossIdx = SolutionUtil.getLossIndex(task.getRisk(), task.getLossScale());
+
+        for (int i = 0; i < n; i++) {
+            riskArr[i] = instrs[i].getRiskCurve()[lossIdx];
+        }
+
+        return riskArr;
+    }
+
+    private void addTargetFunctionMinRisk(LpProblemSolver solver, int size, Instrument[] instrs, double[] lossScale) throws POException {
+        // f(x) = Sum[k in K] (Sum[k in K] pr[k] * loss[k, i]) * p[i] * x[i]
+        // Probability of each possible combinations of risk curve for each instrument.
+        int n = instrs.length;
+
+        List<Double> eventsProbability = new ArrayList<>();
+
+        // Current indexes of risk for each instrument.
+        int[] riskIndices = new int[n];
+
+        List<double[]> eventsLosses = new ArrayList<>();
+
+        // Length of the risk curve (the same for all instruments).
+        int m = instrs[0].getRiskCurve().length;
+
+        double[] coeff = new double[size];
+
+        while (true) {
+            double prob = 1;
+
+            double[] losses = new double[n];
+
+            for (int i = 0; i < n; i++) {
+                prob = prob * instrs[i].getRiskCurve()[riskIndices[i]];
+
+                losses[i] = lossScale[riskIndices[i]];
+            }
+
+            // Need another loop, because prob calculated only after first loop is finished.
+            for (int i = 0; i < n; i++) {
+                coeff[i] += prob * losses[i] + instrs[i].getMinimalLot();
+            }
+
+            eventsProbability.add(prob);
+            eventsLosses.add(losses);
+
+            log.debug("Added event [index={}, probability={}, losses={}, risk-indexes={}, coeff={}]",
+                eventsProbability.size() - 1, prob, Arrays.toString(losses), Arrays.toString(riskIndices),
+                Arrays.toString(coeff));
+
+            boolean incremented = false;
+
+            for (int i = 0; i < riskIndices.length; i++) {
+                if (riskIndices[i] < m - 1) {
+                    riskIndices[i]++;
+
+                    for (int j = 0; j < i; j++) {
+                        riskIndices[j] = 0;
+                    }
+
+                    incremented = true;
+
+                    break;
+                }
+            }
+
+            if (!incremented) {
+                break;
+            }
+        }
+
+        log.debug("Risk minimization target function coefficients array calculated [coeffs={}]",
+            Arrays.toString(coeff));
+
+        solver.addObjective(coeff, TargetDirection.MINIMUM);
     }
 
     private void addMinYieldConstraint(LpProblemSolver solver, Instrument[] instrs, int size, double[] yield,
@@ -197,11 +274,13 @@ public class PortfolioFinderImpl implements PortfolioFinder {
 
         Portfolio p = new Portfolio();
 
+        p.setType(task.getType());
         p.setMaxAmount(task.getMaxAmount());
         p.setAmount(totalAmount);
         p.setAmountAtTerm(SolutionUtil.round(totalAmountAtTerm));
         p.setTerm(task.getTerm());
         p.setRisk(task.getRisk());
+        p.setMinYield(task.getMinYield());
         p.setPortfolioInstruments(lst);
         p.setIncome(SolutionUtil.round(totalIncome));
         p.setYield(SolutionUtil.round(totalIncome * 100 / totalAmount));

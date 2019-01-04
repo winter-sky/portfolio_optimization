@@ -14,8 +14,8 @@ public class PorfolioTest {
     private static final Logger log = LoggerFactory.getLogger(PorfolioTest.class);
 
     @Test
-    public void testPortfolio1() throws Exception {
-        testPortfolio(20000, 4, 0.05, 0.05);
+    public void testPortfolioMaxProfit1() throws Exception {
+        testPortfolioMaxProfit(20000, 4, 0.05, 0.05);
     }
 
     /**
@@ -24,8 +24,8 @@ public class PorfolioTest {
      * @throws Exception
      */
     @Test
-    public void testPortfolio2() throws Exception {
-        testPortfolio(100000, 2, 0.05, 0.05);
+    public void testPortfolioMaxProfit2() throws Exception {
+        testPortfolioMaxProfit(100000, 2, 0.05, 0.05);
     }
 
     /**
@@ -34,8 +34,8 @@ public class PorfolioTest {
      * @throws Exception
      */
     @Test
-    public void testPortfolio3() throws Exception {
-        testPortfolio(15000, 2, 0.01, 0.05);
+    public void testPortfolioMaxProfit3() throws Exception {
+        testPortfolioMaxProfit(15000, 2, 0.01, 0.05);
     }
 
     /**
@@ -44,10 +44,10 @@ public class PorfolioTest {
      * @throws Exception
      */
     @Test
-    public void testPortfolio4() throws Exception {
-        testPortfolio(100000, 4, 0.1, 0.01);
-        testPortfolio(100000, 4, 0.1, 0.05);
-        testPortfolio(100000, 4, 0.1, 0.5);
+    public void testPortfolioMaxProfit4() throws Exception {
+        testPortfolioMaxProfit(100000, 4, 0.1, 0.01);
+        testPortfolioMaxProfit(100000, 4, 0.1, 0.05);
+        testPortfolioMaxProfit(100000, 4, 0.1, 0.5);
     }
 
     /**
@@ -56,12 +56,18 @@ public class PorfolioTest {
      * @throws Exception
      */
     @Test
-    public void testPortfolio5() throws Exception {
-        testPortfolio(100000, 4, 0.5, 0.05);
-        testPortfolio(100000, 4, 0.1, 0.05);
-        testPortfolio(100000, 4, 0.05, 0.05);
+    public void testPortfolioMaxProfit5() throws Exception {
+        testPortfolioMaxProfit(100000, 4, 0.5, 0.05);
+        testPortfolioMaxProfit(100000, 4, 0.1, 0.05);
+        testPortfolioMaxProfit(100000, 4, 0.05, 0.05);
     }
 
+    @Test
+    public void testPortfolioMinRisk1() throws Exception {
+        testPortfolioMinRisk(100000, 4, 0.005);
+        testPortfolioMinRisk(100000, 4, 0.01);
+        testPortfolioMinRisk(100000, 4, 0.02);
+    }
     /**
      *
      * @param maxAmount Maximum amount of investments.
@@ -70,7 +76,11 @@ public class PorfolioTest {
      * @param probability Probability of acceptable loss.
      * @throws POException In case of any error.
      */
-    private void testPortfolio(double maxAmount, int term, double loss, double probability) throws POException {
+    private void testPortfolioMaxProfit(
+        double maxAmount,
+        int term,
+        double loss,
+        double probability) throws POException {
         PortfolioFinder pf = new PortfolioFinderImpl();
 
         Risk risk = new Risk();
@@ -94,4 +104,30 @@ public class PorfolioTest {
         System.out.println(SolutionUtil.printPortfolio(pf.find(task)));
     }
 
+    /**
+     *
+     * @param maxAmount Maximum amount of investments.
+     * @param term Term (period of investments).
+     * @param minYield Minimal yield set by user.
+     * @throws POException In case of any error.
+     */
+    private void testPortfolioMinRisk(
+        double maxAmount,
+        int term,
+        double minYield) throws POException {
+        PortfolioFinder pf = new PortfolioFinderImpl();
+
+        PortfolioTask task = new PortfolioTask();
+
+        task.setInstrument(TestUtils.TEST_INSTRUMENTS);
+        task.setTerm(term);
+        // Maximize profit.
+        task.setType(PortfolioTaskType.MINIMIZE_RISK);
+        // Want to invest 20 000.
+        task.setMaxAmount(maxAmount);
+        task.setMinYield(minYield);
+        task.setLossScale(SolutionUtil.DFLT_LOSS_SCALE);
+
+        System.out.println(SolutionUtil.printPortfolio(pf.find(task)));
+    }
 }
