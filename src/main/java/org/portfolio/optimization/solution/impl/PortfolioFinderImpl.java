@@ -57,7 +57,7 @@ public class PortfolioFinderImpl implements PortfolioFinder {
                 addAuxConstraint(solver, size, instrs);
                 addRiskContraint(solver, size, instrs, riskArr, task.getRisk(), n, task.getLossScale());
 
-                addTargetFunction(solver, size, instrs, yield);
+                addTargetFunctionMaxProfit(solver, size, instrs, yield);
 
                 break;
             }
@@ -97,7 +97,7 @@ public class PortfolioFinderImpl implements PortfolioFinder {
         solver.addConstraint(new LpProblemConstraint(coeff, Relation.GE, 0));
     }
 
-    private void addTargetFunction(LpProblemSolver solver, int size, Instrument[] instrs, double[] yield) throws POException {
+    private void addTargetFunctionMaxProfit(LpProblemSolver solver, int size, Instrument[] instrs, double[] yield) throws POException {
         // Target function.
         //f (X) =  (-1)*Sum[I in N] x[i]*p[i]*yc[i][t]
         int n = instrs.length;

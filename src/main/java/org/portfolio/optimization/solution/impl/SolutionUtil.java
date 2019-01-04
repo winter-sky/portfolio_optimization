@@ -259,8 +259,6 @@ public class SolutionUtil {
 
         int indices[] = new int[riskCurves[0].length];
 
-        List<Double> res = new ArrayList<>();
-
         double[] riskCurve = new double[lossScale.length];
 
         while(true) {
@@ -281,8 +279,6 @@ public class SolutionUtil {
             int idx = SolutionUtil.getLossIndex(loss, lossScale);
 
             riskCurve[idx] += val;
-
-            res.add(val);
 
             log.debug("Value added [val={}, loss={}, idx={}, indices={}, risk-curve={}]", val, loss,  idx,
                 Arrays.toString(indices), Arrays.toString(riskCurve));
@@ -312,7 +308,7 @@ public class SolutionUtil {
             riskCurve[i] = roundProb(riskCurve[i]);
         }
 
-        System.out.println("Res: " + Arrays.toString(riskCurve));
+        log.debug("Summary risk curve: " + Arrays.toString(riskCurve));
 
         return riskCurve;
     }
