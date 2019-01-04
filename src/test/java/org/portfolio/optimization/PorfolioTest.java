@@ -64,9 +64,11 @@ public class PorfolioTest {
 
     @Test
     public void testPortfolioMinRisk1() throws Exception {
-        testPortfolioMinRisk(100000, 4, 0.005);
-        testPortfolioMinRisk(100000, 4, 0.01);
+        testPortfolioMinRisk(100000, 4, 0.015);
+        testPortfolioMinRisk(100000, 4, 0.018);
         testPortfolioMinRisk(100000, 4, 0.02);
+        testPortfolioMinRisk(100000, 4, 0.022);
+        testPortfolioMinRisk(100000, 4, 0.024);
     }
     /**
      *

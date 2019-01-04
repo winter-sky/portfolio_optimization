@@ -54,7 +54,7 @@ public class SolutionUtil {
                 break;
             }
             case MINIMIZE_RISK: {
-                sb.append("\nMinimal yield: ").append(toPercent(p.getMinYield())).append('%');
+                sb.append("\nMinimal yield: ").append(round(p.getMinYield() * 100)).append('%');
 
                 break;
             }

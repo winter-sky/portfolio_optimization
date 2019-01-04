@@ -56,6 +56,8 @@ public class PortfolioFinderImpl implements PortfolioFinder {
                 break;
             }
             case MINIMIZE_RISK: {
+                addMaxAmountConstaint(solver, size, instrs, task.getMaxAmount());
+                addMinAmountConstraint(solver, size, instrs, task.getMaxAmount());
                 addMinYieldConstraint(solver, instrs, size, yield, task.getMinYield());
 
                 addTargetFunctionMinRisk(solver, size, instrs, task.getLossScale());
@@ -120,13 +122,13 @@ public class PortfolioFinderImpl implements PortfolioFinder {
 
             // Need another loop, because prob calculated only after first loop is finished.
             for (int i = 0; i < n; i++) {
-                coeff[i] += prob * losses[i] + instrs[i].getMinimalLot();
+                coeff[i] += prob * losses[i] * instrs[i].getMinimalLot();
             }
 
             eventsProbability.add(prob);
             eventsLosses.add(losses);
 
-            log.debug("Added event [index={}, probability={}, losses={}, risk-indexes={}, coeff={}]",
+            log.trace("Added event [index={}, probability={}, losses={}, risk-indexes={}, coeff={}]",
                 eventsProbability.size() - 1, prob, Arrays.toString(losses), Arrays.toString(riskIndices),
                 Arrays.toString(coeff));
 
@@ -170,6 +172,8 @@ public class PortfolioFinderImpl implements PortfolioFinder {
         for (int i = 0; i < n; i++) {
             coeff[i] = (yield[i] - minYield) * instrs[i].getMinimalLot();
         }
+
+        log.debug("Minimal yield constraint added [coeff={}]", Arrays.toString(coeff));
 
         solver.addConstraint(new LpProblemConstraint(coeff, Relation.GE, 0));
     }
@@ -221,6 +225,27 @@ public class PortfolioFinderImpl implements PortfolioFinder {
         coeff[2 * n] = 1;
 
         solver.addConstraint(new LpProblemConstraint(coeff, Relation.EQ, maxAmount));
+    }
+
+    private void addMinAmountConstraint(LpProblemSolver solver, int size, Instrument[] instrs, double maxAmount) throws POException {
+        // SUM[i in N] p[i]*x[i] = minAmount
+        double maxLot = Arrays.stream(instrs).map(Instrument::getMinimalLot).max(Double::compare).orElse(0d);
+
+        double minAmount = maxAmount - maxLot;
+
+        double[] coeff = new double[size];
+
+        int n = instrs.length;
+
+        for (int i = 0; i < size; i++) {
+            if (i < n) {
+                coeff[i] = instrs[i].getMinimalLot();
+            }
+        }
+
+        solver.addConstraint(new LpProblemConstraint(coeff, Relation.GE, maxAmount));
+
+        log.debug("Min amount constrain added [min-amount={}, coeffs={}]", minAmount, coeff);
     }
 
     private void addRiskContraint(LpProblemSolver solver, int size, Instrument[] instrs, double[] riskArr, Risk risk,
