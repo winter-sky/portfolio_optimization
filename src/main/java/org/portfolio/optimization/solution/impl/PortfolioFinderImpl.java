@@ -96,17 +96,15 @@ public class PortfolioFinderImpl implements PortfolioFinder {
         // Probability of each possible combinations of risk curve for each instrument.
         int n = instrs.length;
 
-        List<Double> eventsProbability = new ArrayList<>();
-
         // Current indexes of risk for each instrument.
         int[] riskIndices = new int[n];
-
-        List<double[]> eventsLosses = new ArrayList<>();
 
         // Length of the risk curve (the same for all instruments).
         int m = instrs[0].getRiskCurve().length;
 
         double[] coeff = new double[size];
+
+        int k = 0;
 
         while (true) {
             double prob = 1;
@@ -124,11 +122,8 @@ public class PortfolioFinderImpl implements PortfolioFinder {
                 coeff[i] += prob * losses[i] * instrs[i].getMinimalLot();
             }
 
-            eventsProbability.add(prob);
-            eventsLosses.add(losses);
-
             log.trace("Added event [index={}, probability={}, losses={}, risk-indexes={}, coeff={}]",
-                eventsProbability.size() - 1, prob, Arrays.toString(losses), Arrays.toString(riskIndices),
+                k++, prob, Arrays.toString(losses), Arrays.toString(riskIndices),
                 Arrays.toString(coeff));
 
             boolean incremented = false;
