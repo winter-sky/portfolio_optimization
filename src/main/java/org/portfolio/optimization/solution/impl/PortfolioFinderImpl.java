@@ -56,8 +56,7 @@ public class PortfolioFinderImpl implements PortfolioFinder {
                 break;
             }
             case MINIMIZE_RISK: {
-                addMaxAmountConstaint(solver, size, instrs, task.getMaxAmount());
-                addMinAmountConstraint(solver, size, instrs, task.getMaxAmount());
+                addAmountConstraint(solver, size, instrs, task.getMaxAmount());
                 addMinYieldConstraint(solver, instrs, size, yield, task.getMinYield());
 
                 addTargetFunctionMinRisk(solver, size, instrs, task.getLossScale());
@@ -227,25 +226,19 @@ public class PortfolioFinderImpl implements PortfolioFinder {
         solver.addConstraint(new LpProblemConstraint(coeff, Relation.EQ, maxAmount));
     }
 
-    private void addMinAmountConstraint(LpProblemSolver solver, int size, Instrument[] instrs, double maxAmount) throws POException {
+    private void addAmountConstraint(LpProblemSolver solver, int size, Instrument[] instrs, double maxAmount) throws POException {
         // SUM[i in N] p[i]*x[i] = minAmount
-        double maxLot = Arrays.stream(instrs).map(Instrument::getMinimalLot).max(Double::compare).orElse(0d);
-
-        double minAmount = maxAmount - maxLot;
-
         double[] coeff = new double[size];
 
         int n = instrs.length;
 
-        for (int i = 0; i < size; i++) {
-            if (i < n) {
-                coeff[i] = instrs[i].getMinimalLot();
-            }
+        for (int i = 0; i < n; i++) {
+            coeff[i] = instrs[i].getMinimalLot();
         }
 
-        solver.addConstraint(new LpProblemConstraint(coeff, Relation.GE, maxAmount));
+        solver.addConstraint(new LpProblemConstraint(coeff, Relation.EQ, maxAmount));
 
-        log.debug("Min amount constrain added [min-amount={}, coeffs={}]", minAmount, coeff);
+        log.debug("Amount constraint added [min-amount={}, coeffs={}]", maxAmount, coeff);
     }
 
     private void addRiskContraint(LpProblemSolver solver, int size, Instrument[] instrs, double[] riskArr, Risk risk,
