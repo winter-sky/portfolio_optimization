@@ -30,7 +30,7 @@ public class PortfolioFinderImpl implements PortfolioFinder {
 
         int n = instrs.length;
 
-        int size = 2 * n + 2;
+        int size = n;
 
         // Yield in the requested term.
         double[] yield = new double[n];
@@ -47,8 +47,7 @@ public class PortfolioFinderImpl implements PortfolioFinder {
             case MAXIMIZE_PROFIT: {
                 double[] riskArr = buildRiskArr(task, instrs);
 
-                addMaxAmountConstaint(solver, size, instrs, task.getMaxAmount());
-                addAuxConstraint(solver, size, instrs);
+                addAmountConstraint(solver, size, instrs, task.getMaxAmount());
                 addRiskContraint(solver, size, instrs, riskArr, task.getRisk(), n, task.getLossScale());
 
                 addTargetFunctionMaxProfit(solver, size, instrs, yield);
@@ -188,41 +187,8 @@ public class PortfolioFinderImpl implements PortfolioFinder {
         solver.addObjective(coeff, TargetDirection.MAXIMUM);
     }
 
-    private void addAuxConstraint(LpProblemSolver solver, int size, Instrument[] instrs) throws POException {
-        double[] coeff;
-
-        int n = instrs.length;
-
-        for (int i = 0; i < n; i++) {
-            coeff = new double[size];
-
-            // Z[i] = p[i] – y, for all i {0, N}, Z[i] > 0;
-            coeff[n + i] = 1;
-            coeff[2 * n] = 1;
-
-            solver.addConstraint(new LpProblemConstraint(coeff, Relation.EQ, instrs[i].getMinimalLot()));
-        }
-    }
-
-    private void addMaxAmountConstaint(LpProblemSolver solver, int size, Instrument[] instrs, double maxAmount) throws POException {
-        // SUM[i in N] p[i]*x[i] + y = su
-        double[] coeff = new double[size];
-
-        int n = instrs.length;
-
-        for (int i = 0; i < size; i++) {
-            if (i < n) {
-                coeff[i] = instrs[i].getMinimalLot();
-            }
-        }
-
-        coeff[2 * n] = 1;
-
-        solver.addConstraint(new LpProblemConstraint(coeff, Relation.EQ, maxAmount));
-    }
-
     private void addAmountConstraint(LpProblemSolver solver, int size, Instrument[] instrs, double maxAmount) throws POException {
-        // SUM[i in N] p[i]*x[i] = minAmount
+        // SUM[i in N] p[i]*x[i] = maxAmount
         double[] coeff = new double[size];
 
         int n = instrs.length;
