@@ -3,6 +3,7 @@ package org.portfolio.optimization;
 import org.junit.Test;
 import org.portfolio.optimization.model.Instrument;
 import org.portfolio.optimization.potfolio.Portfolio;
+import org.portfolio.optimization.potfolio.PortfolioInstrument;
 import org.portfolio.optimization.solution.PortfolioFinder;
 import org.portfolio.optimization.solution.PortfolioTask;
 import org.portfolio.optimization.solution.PortfolioTaskType;
@@ -11,6 +12,10 @@ import org.portfolio.optimization.solution.impl.PortfolioFinderImpl;
 import org.portfolio.optimization.solution.impl.SolutionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static org.portfolio.optimization.solution.impl.SolutionUtil.*;
 
@@ -113,6 +118,32 @@ public class RealDataTest {
     private static final double LOT_SBERBANK = 86.80;
 
     private static final double LOT_OBLIGATION_BANK_ROSSII = 1000;
+
+    private static final String NAME_VTB="VTB";
+
+    private static final String NAME_GAZPROM="Gazprom";
+
+    private static final String NAME_LUKOIL="Lukoil";
+
+    private static final String NAME_MAGNIT="Magnit";
+
+    private static final String NAME_ROSNEFT="Rosneft";
+
+    private static final String NAME_SBERBANK="Sberbank";
+
+    private static final String NAME_OBLIGATION_BANK_ROSSII="Gosobligacii";
+
+    private static Map<String, Double> prices2019 = new HashMap();
+
+    static {
+        prices2019.put(NAME_VTB, 0.03);
+        prices2019.put(NAME_GAZPROM, 153.50);
+        prices2019.put(NAME_LUKOIL, 4997.00);
+        prices2019.put(NAME_MAGNIT, 3576.00);
+        prices2019.put(NAME_ROSNEFT, 425.85);
+        prices2019.put(NAME_SBERBANK, 196.99);
+        prices2019.put(NAME_OBLIGATION_BANK_ROSSII, 1064.9);
+    }
 
 
     private static Instrument prepareInstrumentAction(String name, double[] yield, double minLot, double[] lossScale, int n) {
@@ -254,6 +285,23 @@ public class RealDataTest {
         return task;
     }
 
+    private void calcReal(Portfolio portfolio) {
+        List<PortfolioInstrument> pis = portfolio.getPortfolioInstruments();
+
+        double realAmount = 0;
+
+        for (PortfolioInstrument pi : pis) {
+            realAmount += pi.getQuantity() * prices2019.get(pi.getInstrument().getName());
+        }
+
+        realAmount = SolutionUtil.round(realAmount);
+
+        double yield = SolutionUtil.round((realAmount - portfolio.getAmount()) * 100 / portfolio.getAmount());
+
+        System.out.println("Real amount at term: " + realAmount);
+        System.out.println("Real yield: " + yield + '%');
+    }
+
     @Test
     public void test1() throws Exception {
         PortfolioTask task = prepareTask();
@@ -263,6 +311,8 @@ public class RealDataTest {
         Portfolio portfolio = finder.find(task);
 
         System.out.println(printPortfolio(portfolio));
+
+        calcReal(portfolio);
     }
 
     @Test
@@ -274,5 +324,7 @@ public class RealDataTest {
         Portfolio portfolio = finder.find(task);
 
         System.out.println(printPortfolio(portfolio));
+
+        calcReal(portfolio);
     }
 }
