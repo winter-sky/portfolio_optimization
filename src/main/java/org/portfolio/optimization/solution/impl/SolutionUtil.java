@@ -127,7 +127,7 @@ public class SolutionUtil {
         return round(val, DFLT_SCALE_FACTOR_PROBABILITY);
     }
 
-    private static double round(double val, double scaleFactor) {
+    public static double round(double val, double scaleFactor) {
         return Math.round(val * scaleFactor) / scaleFactor;
     }
 
