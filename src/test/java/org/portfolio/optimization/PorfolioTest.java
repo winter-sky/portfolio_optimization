@@ -70,6 +70,7 @@ public class PorfolioTest {
         testPortfolioMinRisk(100000, 4, 0.022);
         testPortfolioMinRisk(100000, 4, 0.024);
     }
+
     /**
      *
      * @param maxAmount Maximum amount of investments.
