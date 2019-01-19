@@ -2,6 +2,7 @@ package org.portfolio.optimization;
 
 import org.junit.Test;
 import org.portfolio.optimization.model.Instrument;
+import org.portfolio.optimization.model.InstrumentType;
 import org.portfolio.optimization.potfolio.Portfolio;
 import org.portfolio.optimization.potfolio.PortfolioInstrument;
 import org.portfolio.optimization.solution.PortfolioFinder;
@@ -16,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 
 import static org.portfolio.optimization.solution.impl.SolutionUtil.*;
 
@@ -25,6 +27,8 @@ public class RealDataTest {
     private static final int SCALE_FACTOR = 10000;
 
     private static final int YIELD_CURVE_LENGTH = 8;
+
+    private static final AtomicLong idGen = new AtomicLong();
 
     /**
      * Yield of actions by the beginning of each year comparing to 2010-01-01.
@@ -218,12 +222,14 @@ public class RealDataTest {
 
         Instrument inst = new Instrument();
 
+        inst.setId(idGen.incrementAndGet());
         inst.setMinimalLot(minLot);
         inst.setName(name);
         inst.setYieldCurve(yieldCurve);
         inst.setRiskCurve(riskCurve);
+        inst.setInstrumentType(InstrumentType.ACTION);
 
-        log.info("Instrument build [instrument={}]", inst);
+        log.info("Instrument data calculated [instrument={}]", inst);
 
         return inst;
     }
@@ -243,32 +249,25 @@ public class RealDataTest {
 
         Instrument inst = new Instrument();
 
+        inst.setId(idGen.incrementAndGet());
         inst.setName(name);
         inst.setMinimalLot(minLot);
         inst.setYieldCurve(yieldCurveRelative);
         inst.setRiskCurve(riskCurve);
+        inst.setInstrumentType(InstrumentType.OBLIGATION);
 
-        log.info("Instrument build [instrument={}]", inst);
+
+        log.info("Instrument data calculated [instrument={}]", inst);
 
         return inst;
     }
 
-    private PortfolioTask prepareTask() {
-//        Instrument[] instrs = new Instrument[6];
-//
-//        instrs[0] = prepareInstrumentAction("VTB", YIELD_VTB, LOT_VTB, SolutionUtil.DFLT_LOSS_SCALE, YIELD_CURVE_LENGTH);
-//        instrs[1] = prepareInstrumentAction("Gazprom", YIELD_GAZPROM, LOT_GAZPROM, SolutionUtil.DFLT_LOSS_SCALE, YIELD_CURVE_LENGTH);
-//        instrs[2] = prepareInstrumentAction("Lukoil", YIELD_LUKOIL, LOT_LUKOIL, SolutionUtil.DFLT_LOSS_SCALE, YIELD_CURVE_LENGTH);
-//        instrs[3] = prepareInstrumentAction("Magnit", YIELD_MAGNIT, LOT_MAGNIT, SolutionUtil.DFLT_LOSS_SCALE, YIELD_CURVE_LENGTH);
-//        instrs[4] = prepareInstrumentAction("Rosneft", YIELD_ROSNEFT, LOT_ROSNEFT, SolutionUtil.DFLT_LOSS_SCALE, YIELD_CURVE_LENGTH);
-//        instrs[5] = prepareInstrumentAction("Sberbank", YIELD_SBERBANK, LOT_SBERBANK, SolutionUtil.DFLT_LOSS_SCALE, YIELD_CURVE_LENGTH);
-
+    private PortfolioTask prepareTaskMinRisk(double maxAmount, int term, double minYield) {
         Instrument[] instrs = new Instrument[6];
 
         instrs[0] = prepareInstrumentAction("VTB", YIELD_VTB, LOT_VTB, DFLT_LOSS_SCALE, YIELD_CURVE_LENGTH);
         instrs[1] = prepareInstrumentAction("Gazprom", YIELD_GAZPROM, LOT_GAZPROM, DFLT_LOSS_SCALE, YIELD_CURVE_LENGTH);
         instrs[2] = prepareInstrumentAction("Lukoil", YIELD_LUKOIL, LOT_LUKOIL, DFLT_LOSS_SCALE, YIELD_CURVE_LENGTH);
-        //instrs[3] = prepareInstrumentAction("Magnit", YIELD_MAGNIT, LOT_MAGNIT, SolutionUtil.DFLT_LOSS_SCALE, YIELD_CURVE_LENGTH);
         instrs[3] = prepareInstrumentAction("Rosneft", YIELD_ROSNEFT, LOT_ROSNEFT, DFLT_LOSS_SCALE, YIELD_CURVE_LENGTH);
         instrs[4] = prepareInstrumentAction("Sberbank", YIELD_SBERBANK, LOT_SBERBANK, DFLT_LOSS_SCALE, YIELD_CURVE_LENGTH);
         instrs[5] = prepareInstrumentObligation("Gosobligacii", YIELD_CURVE_OBLIGATIONS_BANK_ROSSII, LOT_OBLIGATION_BANK_ROSSII, DFLT_LOSS_SCALE);
@@ -277,38 +276,28 @@ public class RealDataTest {
 
         task.setType(PortfolioTaskType.MINIMIZE_RISK);
         task.setInstrument(instrs);
-        task.setMinYield(0.15);
+        task.setMinYield(minYield);
         task.setLossScale(DFLT_LOSS_SCALE);
-        task.setMaxAmount(100000);
-        task.setTerm(2);
+        task.setMaxAmount(maxAmount);
+        task.setTerm(term);
 
         return task;
     }
 
-    private PortfolioTask prepareTask2() {
-//        Instrument[] instrs = new Instrument[6];
-//
-//        instrs[0] = prepareInstrumentAction("VTB", YIELD_VTB, LOT_VTB, SolutionUtil.DFLT_LOSS_SCALE, YIELD_CURVE_LENGTH);
-//        instrs[1] = prepareInstrumentAction("Gazprom", YIELD_GAZPROM, LOT_GAZPROM, SolutionUtil.DFLT_LOSS_SCALE, YIELD_CURVE_LENGTH);
-//        instrs[2] = prepareInstrumentAction("Lukoil", YIELD_LUKOIL, LOT_LUKOIL, SolutionUtil.DFLT_LOSS_SCALE, YIELD_CURVE_LENGTH);
-//        instrs[3] = prepareInstrumentAction("Magnit", YIELD_MAGNIT, LOT_MAGNIT, SolutionUtil.DFLT_LOSS_SCALE, YIELD_CURVE_LENGTH);
-//        instrs[4] = prepareInstrumentAction("Rosneft", YIELD_ROSNEFT, LOT_ROSNEFT, SolutionUtil.DFLT_LOSS_SCALE, YIELD_CURVE_LENGTH);
-//        instrs[5] = prepareInstrumentAction("Sberbank", YIELD_SBERBANK, LOT_SBERBANK, SolutionUtil.DFLT_LOSS_SCALE, YIELD_CURVE_LENGTH);
-
+    private PortfolioTask prepareTaskMaxProfit(double maxAmount, int term, double loss, double probability) {
         Instrument[] instrs = new Instrument[6];
 
-        instrs[0] = prepareInstrumentAction("VTB", YIELD_VTB, LOT_VTB, DFLT_LOSS_SCALE, YIELD_CURVE_LENGTH);
-        instrs[1] = prepareInstrumentAction("Gazprom", YIELD_GAZPROM, LOT_GAZPROM, DFLT_LOSS_SCALE, YIELD_CURVE_LENGTH);
-        instrs[2] = prepareInstrumentAction("Lukoil", YIELD_LUKOIL, LOT_LUKOIL, DFLT_LOSS_SCALE, YIELD_CURVE_LENGTH);
-        //instrs[3] = prepareInstrumentAction("Magnit", YIELD_MAGNIT, LOT_MAGNIT, SolutionUtil.DFLT_LOSS_SCALE, YIELD_CURVE_LENGTH);
-        instrs[3] = prepareInstrumentAction("Rosneft", YIELD_ROSNEFT, LOT_ROSNEFT, DFLT_LOSS_SCALE, YIELD_CURVE_LENGTH);
-        instrs[4] = prepareInstrumentAction("Sberbank", YIELD_SBERBANK, LOT_SBERBANK, DFLT_LOSS_SCALE, YIELD_CURVE_LENGTH);
-        instrs[5] = prepareInstrumentObligation("Gosobligacii", YIELD_CURVE_OBLIGATIONS_BANK_ROSSII, LOT_OBLIGATION_BANK_ROSSII, DFLT_LOSS_SCALE);
+        instrs[0] = prepareInstrumentObligation("Gosobligacii", YIELD_CURVE_OBLIGATIONS_BANK_ROSSII, LOT_OBLIGATION_BANK_ROSSII, DFLT_LOSS_SCALE);
+        instrs[1] = prepareInstrumentAction("VTB", YIELD_VTB, LOT_VTB, DFLT_LOSS_SCALE, YIELD_CURVE_LENGTH);
+        instrs[2] = prepareInstrumentAction("Gazprom", YIELD_GAZPROM, LOT_GAZPROM, DFLT_LOSS_SCALE, YIELD_CURVE_LENGTH);
+        instrs[3] = prepareInstrumentAction("Lukoil", YIELD_LUKOIL, LOT_LUKOIL, DFLT_LOSS_SCALE, YIELD_CURVE_LENGTH);
+        instrs[4] = prepareInstrumentAction("Rosneft", YIELD_ROSNEFT, LOT_ROSNEFT, DFLT_LOSS_SCALE, YIELD_CURVE_LENGTH);
+        instrs[5] = prepareInstrumentAction("Sberbank", YIELD_SBERBANK, LOT_SBERBANK, DFLT_LOSS_SCALE, YIELD_CURVE_LENGTH);
 
         Risk risk = new Risk();
 
-        risk.setProbability(0.001);
-        risk.setLoss(0.05);
+        risk.setProbability(probability);
+        risk.setLoss(loss);
 
         PortfolioTask task = new PortfolioTask();
 
@@ -316,8 +305,8 @@ public class RealDataTest {
         task.setInstrument(instrs);
         task.setRisk(risk);
         task.setLossScale(DFLT_LOSS_SCALE);
-        task.setMaxAmount(100000);
-        task.setTerm(2);
+        task.setMaxAmount(maxAmount);
+        task.setTerm(term);
 
         return task;
     }
@@ -335,13 +324,24 @@ public class RealDataTest {
 
         double yield = SolutionUtil.round((realAmount - portfolio.getAmount()) * 100 / portfolio.getAmount());
 
-        System.out.println("Real amount at term: " + realAmount);
+        double income = SolutionUtil.round(realAmount - portfolio.getAmount());
+
         System.out.println("Real yield: " + yield + '%');
+        System.out.println("Real income: " + income);
+        System.out.println("Real amount at term: " + realAmount);
+
     }
 
     @Test
     public void test1() throws Exception {
-        PortfolioTask task = prepareTask();
+        testMinRisk(100000, 2, 0.10);
+        testMinRisk(100000, 2, 0.12);
+        testMinRisk(100000, 2, 0.15);
+        testMinRisk(100000, 2, 0.18);
+    }
+
+    private void testMinRisk(double maxAmount, int term, double minYield) throws POException {
+        PortfolioTask task = prepareTaskMinRisk(maxAmount, term, minYield);
 
         PortfolioFinder finder = new PortfolioFinderImpl();
 
@@ -354,7 +354,11 @@ public class RealDataTest {
 
     @Test
     public void test2() throws Exception {
-        PortfolioTask task = prepareTask2();
+        testMaxProfit(100000, 2, 0.05, 0.1);
+    }
+
+    private void testMaxProfit(double maxAmount, int term, double loss, double probability) throws POException {
+        PortfolioTask task = prepareTaskMaxProfit(maxAmount, term, loss, probability);
 
         PortfolioFinder finder = new PortfolioFinderImpl();
 
