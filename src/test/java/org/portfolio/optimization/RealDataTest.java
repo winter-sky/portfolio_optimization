@@ -26,17 +26,23 @@ public class RealDataTest {
 
     private static final int YIELD_CURVE_LENGTH = 8;
 
+    /**
+     * Yield of actions by the beginning of each year comparing to 2010-01-01.
+     */
     private static final double[] YIELD_VTB = new double[] {
-        45.99,
-        -17.44,
-        -24.55,
-        -34.57,
-        -9.50,
-        2.95,
-        -1.78,
-        -32.85
+        45.99,  // 2011
+        -17.44, // 2012
+        -24.55, // 2013
+        -34.57, // 2014
+        -9.50,  // 2015
+        2.95,   // 2016
+        -1.78,  // 2017
+        -32.85  // 2018
     };
 
+    /**
+     * Yield of actions by the beginning of each year comparing to 2010-01-01.
+     */
     private static final double[] YIELD_GAZPROM = new double[] {
         3.23,
         -7.29,
@@ -48,6 +54,9 @@ public class RealDataTest {
         -30.73,
     };
 
+    /**
+     * Yield of actions by the beginning of each year comparing to 2010-01-01.
+     */
     private static final double[] YIELD_LUKOIL = new double[] {
         7.94,
         0.05,
@@ -60,18 +69,23 @@ public class RealDataTest {
 
     };
 
-    private static final double[] YIELD_MAGNIT = new double[] {
-        96.60,
-        43.61,
-        125.92,
-        322.30,
-        373.55,
-        418.52,
-        406.64,
-        196.38
-
+    /**
+     * Yield of actions by the beginning of each year comparing to 2010-01-01.
+     */
+    private static final double[] YIELD_NORNIKEL = new double[] {
+        57.10,
+        3.74,
+        23.52,
+        9.32,
+        94.50,
+        89.32,
+        113.03,
+        137.77
     };
 
+    /**
+     * Yield of actions by the beginning of each year comparing to 2010-01-01.
+     */
     private static final double[] YIELD_ROSNEFT = new double[] {
         -13.84,
         -18.01,
@@ -83,6 +97,9 @@ public class RealDataTest {
         10.99
     };
 
+    /**
+     * Yield of actions by the beginning of each year comparing to 2010-01-01.
+     */
     private static final double[] YIELD_SBERBANK = new double[] {
         22.58,
         -4.47,
@@ -94,6 +111,9 @@ public class RealDataTest {
         158.81,
     };
 
+    /**
+     * Yield curve of obligations.
+     */
     private static final double[] YIELD_CURVE_OBLIGATIONS_BANK_ROSSII = new double[] {
         6.16,
         6.27,
@@ -105,41 +125,58 @@ public class RealDataTest {
         7.35,
     };
 
-    private static final double LOT_VTB = 0.07;
+    /** Price of action for the beginning of calculation period (2018-01-01). */
+    private static final double LOT_VTB = 0.05;
 
-    private static final double LOT_GAZPROM = 190.86;
+    /** Price of action for the beginning of calculation period (2018-01-01). */
+    private static final double LOT_GAZPROM = 132.20;
 
-    private static final double LOT_LUKOIL = 1727.80;
+    /** Price of action for the beginning of calculation period (2018-01-01). */
+    private static final double LOT_LUKOIL = 3421.50;
 
-    private static final double LOT_MAGNIT = 2188.03;
+    /** Price of action for the beginning of calculation period (2018-01-01). */
+    private static final double LOT_NORNIKEL = 11302.00;
 
-    private static final double LOT_ROSNEFT = 268.45;
+    /** Price of action for the beginning of calculation period (2018-01-01). */
+    private static final double LOT_ROSNEFT = 297.95;
 
-    private static final double LOT_SBERBANK = 86.80;
+    /** Price of action for the beginning of calculation period (2018-01-01). */
+    private static final double LOT_SBERBANK = 224.65;
 
+    /** Price of obligation. */
     private static final double LOT_OBLIGATION_BANK_ROSSII = 1000;
 
+    /** String name to identify financial instrument. */
     private static final String NAME_VTB="VTB";
 
+    /** String name to identify financial instrument. */
     private static final String NAME_GAZPROM="Gazprom";
 
+    /** String name to identify financial instrument. */
     private static final String NAME_LUKOIL="Lukoil";
 
-    private static final String NAME_MAGNIT="Magnit";
+    /** String name to identify financial instrument. */
+    private static final String NAME_NORNIKEL="Nornikel";
 
+    /** String name to identify financial instrument. */
     private static final String NAME_ROSNEFT="Rosneft";
 
+    /** String name to identify financial instrument. */
     private static final String NAME_SBERBANK="Sberbank";
 
+    /** String name to identify financial instrument. */
     private static final String NAME_OBLIGATION_BANK_ROSSII="Gosobligacii";
 
     private static Map<String, Double> prices2019 = new HashMap();
 
+    /**
+     * Prices of tested financial instruments by 2019-01-01.
+     */
     static {
         prices2019.put(NAME_VTB, 0.03);
         prices2019.put(NAME_GAZPROM, 153.50);
         prices2019.put(NAME_LUKOIL, 4997.00);
-        prices2019.put(NAME_MAGNIT, 3576.00);
+        prices2019.put(NAME_NORNIKEL, 13039.00);
         prices2019.put(NAME_ROSNEFT, 425.85);
         prices2019.put(NAME_SBERBANK, 196.99);
         prices2019.put(NAME_OBLIGATION_BANK_ROSSII, 1064.9);
